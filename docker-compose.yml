@@ -29,5 +29,6 @@ services:
       - control-plane
     environment:
       CLUSTERPILOT_API_BASE_URL: http://control-plane:8000
+      NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL: http://localhost:8000
     ports:
       - "3000:3000"

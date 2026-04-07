@@ -4,10 +4,10 @@ import time
 
 from .artifact_agent import ArtifactAgent
 from .config import get_config
-from .control_plane import register_node, send_heartbeat
+from .control_plane import register_node
 from .execution_agent import ExecutionAgent
-from .inventory_agent import InventoryAgent
 from .heartbeat_agent import HeartbeatAgent
+from .inventory_agent import InventoryAgent
 
 
 def main() -> None:

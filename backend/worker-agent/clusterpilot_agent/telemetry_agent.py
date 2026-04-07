@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from .bootstrap import configure_local_paths
+
+configure_local_paths()
+
 from clusterpilot_core.models import NodeHeartbeat
 
 

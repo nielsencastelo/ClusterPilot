@@ -8,6 +8,7 @@ COPY frontend/web-dashboard /app/frontend/web-dashboard
 RUN npm install
 
 ENV CLUSTERPILOT_API_BASE_URL=http://control-plane:8000
+ENV NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL=http://localhost:8000
 
 EXPOSE 3000
 
