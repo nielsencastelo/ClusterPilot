@@ -1,16 +1,27 @@
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
+from uuid import uuid4
+
 from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import UploadFile
 
 from clusterpilot_core.models import (
     AgentModelConfig,
     AgentName,
+    EmbeddingRuntimeConfig,
     JobCreate,
     JobRecord,
     JobStatus,
+    KnowledgeDocumentRecord,
+    KnowledgeDocumentStatus,
+    KnowledgeSearchRequest,
+    KnowledgeSearchResult,
     ModelCatalogItem,
     ModelCatalogUpsert,
     NodeHeartbeatPayload,
@@ -18,8 +29,17 @@ from clusterpilot_core.models import (
     NodeRegistration,
     NodeStatus,
 )
+from clusterpilot_core.settings import ControlPlaneSettings
 
-from ..database.models import AgentConfigOrm, JobOrm, ModelCatalogOrm, NodeOrm
+from ..database.models import (
+    AgentConfigOrm,
+    EmbeddingConfigOrm,
+    JobOrm,
+    KnowledgeChunkOrm,
+    KnowledgeDocumentOrm,
+    ModelCatalogOrm,
+    NodeOrm,
+)
 
 
 def _to_node_record(item: NodeOrm) -> NodeRecord:
@@ -75,6 +95,42 @@ def _to_agent_config(item: AgentConfigOrm) -> AgentModelConfig:
         temperature=item.temperature,
         manual_override=item.manual_override,
     )
+
+
+def _to_embedding_config(item: EmbeddingConfigOrm) -> EmbeddingRuntimeConfig:
+    return EmbeddingRuntimeConfig(
+        provider=item.provider,
+        model=item.model,
+        base_url=item.base_url,
+        enabled=item.enabled,
+        dimensions=item.dimensions,
+    )
+
+
+def _to_document_record(item: KnowledgeDocumentOrm) -> KnowledgeDocumentRecord:
+    return KnowledgeDocumentRecord(
+        document_id=item.document_id,
+        agent_name=AgentName(item.agent_name),
+        filename=item.filename,
+        content_type=item.content_type,
+        source_path=item.source_path,
+        checksum=item.checksum,
+        status=KnowledgeDocumentStatus(item.status),
+        chunk_count=item.chunk_count,
+        created_at=item.created_at,
+        updated_at=item.updated_at,
+    )
+
+
+def cosine_similarity(left: list[float], right: list[float]) -> float:
+    if not left or not right or len(left) != len(right):
+        return 0.0
+    dot = sum(a * b for a, b in zip(left, right))
+    left_norm = sum(a * a for a in left) ** 0.5
+    right_norm = sum(b * b for b in right) ** 0.5
+    if left_norm == 0 or right_norm == 0:
+        return 0.0
+    return dot / (left_norm * right_norm)
 
 
 class SqlAlchemyNodeRepository:
@@ -221,3 +277,149 @@ class SqlAlchemyAgentConfigRepository:
         await self.session.commit()
         await self.session.refresh(item)
         return _to_agent_config(item)
+
+
+class SqlAlchemyEmbeddingConfigRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def get(self) -> EmbeddingRuntimeConfig:
+        item = await self.session.get(EmbeddingConfigOrm, 1)
+        if item is None:
+            item = EmbeddingConfigOrm(
+                config_id=1,
+                provider="ollama",
+                model="nomic-embed-text",
+                base_url="http://ollama:11434",
+                enabled=True,
+                dimensions=None,
+            )
+            self.session.add(item)
+            await self.session.commit()
+            await self.session.refresh(item)
+        return _to_embedding_config(item)
+
+    async def upsert(self, payload: EmbeddingRuntimeConfig) -> EmbeddingRuntimeConfig:
+        item = await self.session.get(EmbeddingConfigOrm, 1)
+        if item is None:
+            item = EmbeddingConfigOrm(config_id=1)
+            self.session.add(item)
+        item.provider = payload.provider
+        item.model = payload.model
+        item.base_url = payload.base_url
+        item.enabled = payload.enabled
+        item.dimensions = payload.dimensions
+        await self.session.commit()
+        await self.session.refresh(item)
+        return _to_embedding_config(item)
+
+
+class SqlAlchemyKnowledgeRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+        self.settings = ControlPlaneSettings()
+
+    async def save_upload(self, agent_name: AgentName, upload: UploadFile) -> KnowledgeDocumentRecord:
+        content = await upload.read()
+        document_id = f"doc-{uuid4().hex[:12]}"
+        storage_root = Path(self.settings.knowledge_storage_path)
+        agent_dir = storage_root / agent_name.value
+        agent_dir.mkdir(parents=True, exist_ok=True)
+        target_path = agent_dir / f"{document_id}-{upload.filename}"
+        target_path.write_bytes(content)
+        checksum = hashlib.sha256(content).hexdigest()
+        now = datetime.now(timezone.utc)
+        item = KnowledgeDocumentOrm(
+            document_id=document_id,
+            agent_name=agent_name.value,
+            filename=upload.filename,
+            content_type=upload.content_type or "application/octet-stream",
+            source_path=str(target_path),
+            checksum=checksum,
+            status=KnowledgeDocumentStatus.PENDING.value,
+            chunk_count=0,
+            created_at=now,
+            updated_at=now,
+        )
+        self.session.add(item)
+        await self.session.commit()
+        await self.session.refresh(item)
+        return _to_document_record(item)
+
+    async def list_documents(self, agent_name: AgentName) -> list[KnowledgeDocumentRecord]:
+        result = await self.session.execute(
+            select(KnowledgeDocumentOrm)
+            .where(KnowledgeDocumentOrm.agent_name == agent_name.value)
+            .order_by(KnowledgeDocumentOrm.created_at.desc())
+        )
+        return [_to_document_record(item) for item in result.scalars().all()]
+
+    async def get_document(self, document_id: str) -> KnowledgeDocumentOrm | None:
+        return await self.session.get(KnowledgeDocumentOrm, document_id)
+
+    async def replace_chunks(
+        self,
+        document_id: str,
+        agent_name: AgentName,
+        chunks: list[tuple[str, list[float], dict]],
+        status: KnowledgeDocumentStatus,
+    ) -> None:
+        result = await self.session.execute(select(KnowledgeChunkOrm).where(KnowledgeChunkOrm.document_id == document_id))
+        for item in result.scalars().all():
+            await self.session.delete(item)
+        for index, (text, embedding, metadata) in enumerate(chunks):
+            self.session.add(
+                KnowledgeChunkOrm(
+                    chunk_id=f"chunk-{uuid4().hex[:12]}",
+                    document_id=document_id,
+                    agent_name=agent_name.value,
+                    chunk_index=index,
+                    text=text,
+                    embedding=embedding,
+                    metadata=metadata,
+                )
+            )
+        document = await self.session.get(KnowledgeDocumentOrm, document_id)
+        if document is not None:
+            document.chunk_count = len(chunks)
+            document.status = status.value
+            document.updated_at = datetime.now(timezone.utc)
+        await self.session.commit()
+
+    async def mark_document_status(self, document_id: str, status: KnowledgeDocumentStatus) -> None:
+        document = await self.session.get(KnowledgeDocumentOrm, document_id)
+        if document is None:
+            return
+        document.status = status.value
+        document.updated_at = datetime.now(timezone.utc)
+        await self.session.commit()
+
+    async def search(
+        self,
+        payload: KnowledgeSearchRequest,
+        embedding_config: EmbeddingRuntimeConfig,
+    ) -> list[KnowledgeSearchResult]:
+        from ...worker.embedding import OllamaEmbeddingClient
+
+        client = OllamaEmbeddingClient(embedding_config)
+        query_vector = await client.embed(payload.query)
+        result = await self.session.execute(
+            select(KnowledgeChunkOrm)
+            .where(KnowledgeChunkOrm.agent_name == payload.agent_name.value)
+            .order_by(KnowledgeChunkOrm.created_at.desc())
+        )
+        ranked: list[KnowledgeSearchResult] = []
+        for item in result.scalars().all():
+            score = cosine_similarity(query_vector, item.embedding)
+            ranked.append(
+                KnowledgeSearchResult(
+                    chunk_id=item.chunk_id,
+                    document_id=item.document_id,
+                    agent_name=payload.agent_name,
+                    text=item.text,
+                    score=score,
+                    metadata=item.metadata,
+                )
+            )
+        ranked.sort(key=lambda item: item.score, reverse=True)
+        return ranked[: payload.top_k]
