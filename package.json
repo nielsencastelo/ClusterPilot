@@ -3,8 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "workspaces": [
-    "frontend/web-dashboard",
-    "shared/core-contracts/web"
+    "frontend/web-dashboard"
   ],
   "scripts": {
     "dev:web": "npm --workspace frontend/web-dashboard run dev",

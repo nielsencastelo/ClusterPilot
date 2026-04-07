@@ -1,4 +1,4 @@
-import type { JobRecord, NodeRecord } from "@clusterpilot/core-contracts";
+import type { JobRecord, NodeRecord } from "@/lib/types";
 import type { CSSProperties } from "react";
 
 import { fetchJobs, fetchNodes } from "@/lib/api";
@@ -205,6 +205,13 @@ const tagStyle: CSSProperties = {
   fontSize: 12,
   fontWeight: 600,
 };
+const heroLinkStyle: CSSProperties = {
+  display: "inline-flex",
+  padding: "10px 14px",
+  borderRadius: 999,
+  background: "rgba(255,248,237,0.12)",
+  border: "1px solid rgba(255,248,237,0.18)",
+};
 
 export default async function HomePage() {
   const [nodes, jobs] = await Promise.all([fetchNodes(), fetchJobs()]);
@@ -232,6 +239,10 @@ export default async function HomePage() {
           <p style={{ margin: "16px 0 0", fontSize: 18, lineHeight: 1.6, color: "rgba(255,248,237,0.82)" }}>
             A first operational slice for distributed orchestration across local and remote compute nodes.
           </p>
+          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 20 }}>
+            <a href="/models" style={heroLinkStyle}>Manage Models</a>
+            <a href="/agents" style={heroLinkStyle}>Configure Agents</a>
+          </div>
         </div>
       </section>
 
