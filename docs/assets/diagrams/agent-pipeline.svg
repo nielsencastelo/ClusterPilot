@@ -1,0 +1,160 @@
+<svg width="1200" height="820" viewBox="0 0 1200 820" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="820" rx="32" fill="#F5EFE6"/>
+
+  <defs>
+    <marker id="arrUp" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#546174"/>
+    </marker>
+    <marker id="arrUpR" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#D95D39"/>
+    </marker>
+    <marker id="arrUpG" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#207868"/>
+    </marker>
+    <marker id="arrUpA" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#F0B24C"/>
+    </marker>
+    <marker id="arrUpB" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4A9CC8"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="60" y="58" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">ClusterPilot — Agent Data Pipeline</text>
+  <text x="60" y="94" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">Hardware signals travel upward through worker agents into the AI-powered control plane and web dashboard.</text>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       TIER 1 — CONTROL PLANE  (y=112 → y=328)
+  ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="30" y="112" width="1140" height="216" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="600" y="136" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="2">CONTROL PLANE · FastAPI · :8000</text>
+
+  <!-- Node Registry -->
+  <rect x="58" y="148" width="230" height="156" rx="18" fill="#18212F"/>
+  <text x="173" y="180" fill="#F0B24C" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">NODE REGISTRY</text>
+  <text x="173" y="202" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Stores NodeRecord</text>
+  <text x="173" y="220" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">NodeCapabilities</text>
+  <text x="173" y="242" fill="#7BB8E0" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">POST /nodes/register</text>
+  <text x="173" y="260" fill="#7BB8E0" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">GET /nodes</text>
+  <text x="173" y="292" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">← Inventory Agent</text>
+
+  <!-- Heartbeat Processor -->
+  <rect x="308" y="148" width="230" height="156" rx="18" fill="#207868"/>
+  <text x="423" y="180" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">HEARTBEAT PROCESSOR</text>
+  <text x="423" y="202" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Updates last-seen ts.</text>
+  <text x="423" y="220" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Marks stale nodes</text>
+  <text x="423" y="242" fill="#B8FFE8" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">POST /nodes/{id}/heartbeat</text>
+  <text x="423" y="292" fill="#9DE8CA" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">← Heartbeat Agent</text>
+
+  <!-- Job Queue + Planner (AI) -->
+  <rect x="558" y="148" width="230" height="156" rx="18" fill="#D95D39"/>
+  <rect x="718" y="152" width="66" height="20" rx="6" fill="#F0B24C"/>
+  <text x="751" y="166" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" text-anchor="middle">AI-POWERED</text>
+  <text x="673" y="180" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">JOB QUEUE + PLANNER</text>
+  <text x="673" y="202" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Accepts JobRecord</text>
+  <text x="673" y="220" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Eligibility check · dispatch</text>
+  <text x="673" y="242" fill="#FFD9C9" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">POST /jobs · GET /jobs</text>
+  <text x="673" y="292" fill="#FFD9C9" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">← dispatches to Execution Agent</text>
+
+  <!-- AI Intelligence Agents -->
+  <rect x="808" y="148" width="330" height="156" rx="18" fill="#2A1F3D"/>
+  <rect x="816" y="152" width="66" height="20" rx="6" fill="#F0B24C"/>
+  <text x="849" y="166" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="10" font-weight="700" text-anchor="middle">AI-POWERED</text>
+  <text x="973" y="180" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">INTELLIGENCE AGENTS</text>
+  <!-- Planner badge -->
+  <rect x="820" y="194" width="92" height="38" rx="10" fill="#D95D39" opacity="0.85"/>
+  <text x="866" y="213" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">Planner</text>
+  <text x="866" y="227" fill="#FFD9C9" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">placement logic</text>
+  <!-- Rebalance badge -->
+  <rect x="924" y="194" width="98" height="38" rx="10" fill="#207868" opacity="0.85"/>
+  <text x="973" y="213" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">Rebalance</text>
+  <text x="973" y="227" fill="#B8FFE8" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">load distribution</text>
+  <!-- Policy badge -->
+  <rect x="1034" y="194" width="92" height="38" rx="10" fill="#4A6E9C" opacity="0.85"/>
+  <text x="1080" y="213" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">Policy</text>
+  <text x="1080" y="227" fill="#C8D8EE" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">runtime rules</text>
+  <!-- Model Catalog label -->
+  <text x="973" y="260" fill="#9080B0" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">Model Catalog</text>
+  <text x="973" y="276" fill="#9080B0" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">per-agent LLM config</text>
+  <text x="973" y="292" fill="#9080B0" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">GET /models/catalog · GET /agents/config</text>
+
+  <!-- Gap 1: label + arrows (y=328 → y=400) -->
+  <text x="600" y="366" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" font-style="italic">REST API · JSON over HTTP · clusterpilot-core typed contracts (Python + TypeScript)</text>
+
+  <path d="M 173 400 L 173 332" stroke="#D95D39" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpR)"/>
+  <path d="M 423 400 L 423 332" stroke="#207868" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpG)"/>
+  <path d="M 673 400 L 673 332" stroke="#F0B24C" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpA)"/>
+  <path d="M 973 400 L 973 332" stroke="#4A9CC8" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpB)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       TIER 2 — WORKER AGENT  (y=400 → y=600)
+  ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="30" y="400" width="1140" height="200" rx="24" fill="#18212F"/>
+  <text x="600" y="424" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="2">WORKER AGENT PROCESS · one per cluster node · Python</text>
+
+  <!-- Inventory Agent -->
+  <rect x="58" y="436" width="220" height="144" rx="16" fill="#D95D39"/>
+  <text x="168" y="462" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Inventory Agent</text>
+  <text x="168" y="482" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">CPU, RAM, disk</text>
+  <text x="168" y="500" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">GPU, NPU, runtimes</text>
+  <text x="168" y="522" fill="#FFD9C9" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">→ NodeCapabilities</text>
+  <text x="168" y="570" fill="#FFD9C9" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">on boot + on demand</text>
+
+  <!-- Heartbeat Agent -->
+  <rect x="298" y="436" width="220" height="144" rx="16" fill="#207868"/>
+  <text x="408" y="462" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Heartbeat Agent</text>
+  <text x="408" y="482" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">CPU %, mem %, GPU %</text>
+  <text x="408" y="500" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">active jobs count</text>
+  <text x="408" y="522" fill="#B8FFE8" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">→ NodeHeartbeat</text>
+  <text x="408" y="570" fill="#9DE8CA" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">configurable interval</text>
+
+  <!-- Execution Agent -->
+  <rect x="538" y="436" width="220" height="144" rx="16" fill="#F0B24C"/>
+  <text x="648" y="462" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Execution Agent</text>
+  <text x="648" y="482" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">dispatched by planner</text>
+  <text x="648" y="500" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">runs training scripts</text>
+  <text x="648" y="522" fill="#6B4A00" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">→ JobRecord status</text>
+  <text x="648" y="570" fill="#6B4A00" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">env provisioning · future GPU</text>
+
+  <!-- Telemetry + Artifact -->
+  <rect x="778" y="436" width="360" height="144" rx="16" fill="#2A3A50"/>
+  <text x="958" y="462" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Telemetry · Artifact Agents</text>
+  <text x="958" y="482" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Streams logs, GPU util, mem pressure</text>
+  <text x="958" y="500" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">Model artifact tracking and sync</text>
+  <text x="958" y="522" fill="#7BB8E0" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">→ Metrics · Logs · Artifact manifests</text>
+  <text x="958" y="570" fill="#7BB8E0" font-family="Segoe UI, Arial, sans-serif" font-size="10" text-anchor="middle">future: OpenTelemetry · model registry</text>
+
+  <!-- Gap 2: label + arrows (y=600 → y=668) -->
+  <text x="600" y="636" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle" font-style="italic">OS calls · psutil · NVML · CUDA bindings · platform APIs</text>
+
+  <path d="M 173 668 L 173 604" stroke="#D95D39" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpR)"/>
+  <path d="M 408 668 L 408 604" stroke="#207868" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpG)"/>
+  <path d="M 648 668 L 648 604" stroke="#F0B24C" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpA)"/>
+  <path d="M 958 668 L 958 604" stroke="#4A9CC8" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrUpB)"/>
+
+  <!-- ═══════════════════════════════════════════════════════════════════
+       TIER 3 — HARDWARE  (y=668 → y=800)
+  ═══════════════════════════════════════════════════════════════════ -->
+  <rect x="30" y="668" width="1140" height="132" rx="24" fill="#2A3A50"/>
+  <text x="600" y="692" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="11" font-weight="700" text-anchor="middle" letter-spacing="2">PHYSICAL HARDWARE LAYER</text>
+
+  <rect x="58" y="702" width="220" height="82" rx="14" fill="#3A4F68"/>
+  <text x="168" y="730" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">CPU cores · RAM</text>
+  <text x="168" y="750" fill="#A8C0D6" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">threads · NUMA topology</text>
+  <text x="168" y="768" fill="#6890A8" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">memory available / total</text>
+
+  <rect x="298" y="702" width="220" height="82" rx="14" fill="#3A4F68"/>
+  <text x="408" y="730" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Process Health</text>
+  <text x="408" y="750" fill="#A8C0D6" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">uptime · load average</text>
+  <text x="408" y="768" fill="#6890A8" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">memory pressure · I/O</text>
+
+  <rect x="538" y="702" width="220" height="82" rx="14" fill="#3A4F68"/>
+  <text x="648" y="730" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">GPU · NPU devices</text>
+  <text x="648" y="750" fill="#A8C0D6" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">CUDA · ROCm · OpenCL</text>
+  <text x="648" y="768" fill="#6890A8" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">VRAM · compute capability</text>
+
+  <rect x="778" y="702" width="360" height="82" rx="14" fill="#3A4F68"/>
+  <text x="958" y="730" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="13" font-weight="700" text-anchor="middle">Logs · Metrics · Model Artifacts</text>
+  <text x="958" y="750" fill="#A8C0D6" font-family="Segoe UI, Arial, sans-serif" font-size="12" text-anchor="middle">stdout · stderr · NVML counters</text>
+  <text x="958" y="768" fill="#6890A8" font-family="Segoe UI, Arial, sans-serif" font-size="11" text-anchor="middle">filesystem · checkpoints · weights</text>
+</svg>

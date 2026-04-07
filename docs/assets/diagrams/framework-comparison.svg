@@ -1,0 +1,109 @@
+<svg width="1200" height="730" viewBox="0 0 1200 730" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="730" rx="32" fill="#F5EFE6"/>
+
+  <!-- Title -->
+  <text x="60" y="58" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="30" font-weight="700">ClusterPilot vs. Low-Level Frameworks</text>
+  <text x="60" y="94" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">Feature comparison: AI-native orchestration vs. generic distributed computing and HPC schedulers.</text>
+
+  <!-- ClusterPilot column highlight (behind header) -->
+  <rect x="330" y="110" width="166" height="578" rx="0" fill="#FFF4E0" opacity="0.7"/>
+
+  <!-- Header row -->
+  <rect x="40" y="116" width="1120" height="52" rx="12" fill="#18212F"/>
+  <text x="60" y="148" fill="#7088A0" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1">FEATURE</text>
+  <text x="413" y="148" fill="#F0B24C" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle" letter-spacing="1">CLUSTERPILOT</text>
+  <text x="579" y="148" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle">Ray</text>
+  <text x="745" y="148" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle">Kubernetes</text>
+  <text x="911" y="148" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle">SLURM</text>
+  <text x="1077" y="148" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="600" text-anchor="middle">Ad-hoc Scripts</text>
+
+  <!-- ── Row 0  (y=168, center=199) ── -->
+  <rect x="40" y="168" width="1120" height="60" rx="0" fill="#FFF9F1"/>
+  <text x="60" y="202" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">AI-powered scheduling decisions (LLM agents)</text>
+  <rect x="387" y="185" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="203" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="185" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="579" y="203" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="719" y="185" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="745" y="203" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="885" y="185" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="203" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="185" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="203" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 1  (y=228, center=258) ── -->
+  <rect x="40" y="228" width="1120" height="60" rx="0" fill="#F5EDE0"/>
+  <text x="60" y="263" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Per-agent LLM model configuration</text>
+  <rect x="387" y="245" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="263" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="245" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="579" y="263" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="719" y="245" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="745" y="263" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="885" y="245" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="263" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="245" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="263" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 2  (y=288, center=318) ── -->
+  <rect x="40" y="288" width="1120" height="60" rx="0" fill="#FFF9F1"/>
+  <text x="60" y="323" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Heterogeneous hardware support (CPU / GPU / NPU)</text>
+  <rect x="387" y="305" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="323" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="305" width="52" height="26" rx="13" fill="#E09020"/><text x="579" y="323" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="719" y="305" width="52" height="26" rx="13" fill="#E09020"/><text x="745" y="323" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="885" y="305" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="323" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="305" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="323" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 3  (y=348, center=378) ── -->
+  <rect x="40" y="348" width="1120" height="60" rx="0" fill="#F5EDE0"/>
+  <text x="60" y="383" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Built-in live web dashboard</text>
+  <rect x="387" y="365" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="383" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="365" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="579" y="383" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="719" y="365" width="52" height="26" rx="13" fill="#E09020"/><text x="745" y="383" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="885" y="365" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="383" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="365" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="383" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 4  (y=408, center=438) ── -->
+  <rect x="40" y="408" width="1120" height="60" rx="0" fill="#FFF9F1"/>
+  <text x="60" y="443" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Agent-based node observability</text>
+  <rect x="387" y="425" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="443" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="425" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="579" y="443" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="719" y="425" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="745" y="443" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="885" y="425" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="443" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="425" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="443" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 5  (y=468, center=498) ── -->
+  <rect x="40" y="468" width="1120" height="60" rx="0" fill="#F5EDE0"/>
+  <text x="60" y="503" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Typed cross-language contracts (Python + TypeScript)</text>
+  <rect x="387" y="485" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="503" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="485" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="579" y="503" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="719" y="485" width="52" height="26" rx="13" fill="#E09020"/><text x="745" y="503" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="885" y="485" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="503" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="485" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="503" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 6  (y=528, center=558) ── -->
+  <rect x="40" y="528" width="1120" height="60" rx="0" fill="#FFF9F1"/>
+  <text x="60" y="563" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Hardware-aware job placement</text>
+  <rect x="387" y="545" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="563" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="545" width="52" height="26" rx="13" fill="#E09020"/><text x="579" y="563" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="719" y="545" width="52" height="26" rx="13" fill="#E09020"/><text x="745" y="563" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="885" y="545" width="52" height="26" rx="13" fill="#207868"/><text x="911" y="563" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="1051" y="545" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="563" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- ── Row 7  (y=588, center=618) ── -->
+  <rect x="40" y="588" width="1120" height="60" rx="0" fill="#F5EDE0"/>
+  <text x="60" y="623" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">Single-command local deployment</text>
+  <rect x="387" y="605" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="623" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="605" width="52" height="26" rx="13" fill="#207868"/><text x="579" y="623" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="719" y="605" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="745" y="623" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="885" y="605" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="623" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="605" width="52" height="26" rx="13" fill="#207868"/><text x="1077" y="623" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+
+  <!-- ── Row 8  (y=648, center=678) ── -->
+  <rect x="40" y="648" width="1120" height="60" rx="0" fill="#FFF9F1"/>
+  <text x="60" y="683" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="14">First-class ML workflow API</text>
+  <rect x="387" y="665" width="52" height="26" rx="13" fill="#207868"/><text x="413" y="683" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">YES</text>
+  <rect x="553" y="665" width="52" height="26" rx="13" fill="#E09020"/><text x="579" y="683" fill="white" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">PART</text>
+  <rect x="719" y="665" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="745" y="683" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="885" y="665" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="911" y="683" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+  <rect x="1051" y="665" width="52" height="26" rx="13" fill="#C0C8D0"/><text x="1077" y="683" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12" font-weight="700" text-anchor="middle">NO</text>
+
+  <!-- Legend -->
+  <rect x="40" y="716" width="1120" height="4" rx="0" fill="#D8D0C3" opacity="0.5"/>
+  <rect x="60" y="722" width="40" height="4" rx="2" fill="#207868"/>
+  <text x="108" y="730" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12">YES — full native support</text>
+  <rect x="320" y="722" width="40" height="4" rx="2" fill="#E09020"/>
+  <text x="368" y="730" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12">PART — partial or requires plugins/setup</text>
+  <rect x="680" y="722" width="40" height="4" rx="2" fill="#C0C8D0"/>
+  <text x="728" y="730" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="12">NO — not available out of the box</text>
+</svg>
