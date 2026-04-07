@@ -31,8 +31,8 @@ async def list_agent_configs(service: ModelServiceDep) -> AgentConfigListRespons
 
 @router.put("/agents/config/{agent_name}", response_model=AgentModelConfig)
 async def upsert_agent_config(
-    agent_name: str, payload: AgentModelConfig, service: ModelServiceDep
+    agent_name: AgentName, payload: AgentModelConfig, service: ModelServiceDep
 ) -> AgentModelConfig:
-    if payload.agent_name.value != agent_name:
-        payload = payload.model_copy(update={"agent_name": AgentName(agent_name)})
+    if payload.agent_name != agent_name:
+        payload = payload.model_copy(update={"agent_name": agent_name})
     return service.upsert_agent_config(payload)
