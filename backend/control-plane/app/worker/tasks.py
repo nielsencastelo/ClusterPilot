@@ -2,11 +2,11 @@ from __future__ import annotations
 
 import asyncio
 
-from clusterpilot_core.models import JobStatus
-
 from ..bootstrap import configure_local_paths
 
 configure_local_paths()
+
+from clusterpilot_core.models import JobStatus
 
 from ..infrastructure.database.session import SessionLocal
 from ..infrastructure.repositories.sqlalchemy import SqlAlchemyJobRepository

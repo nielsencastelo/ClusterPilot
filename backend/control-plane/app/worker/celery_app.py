@@ -1,5 +1,9 @@
 from __future__ import annotations
 
+from ..bootstrap import configure_local_paths
+
+configure_local_paths()
+
 from celery import Celery
 
 from clusterpilot_core.settings import ControlPlaneSettings
