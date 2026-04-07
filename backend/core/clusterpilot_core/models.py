@@ -57,6 +57,12 @@ class KnowledgeDocumentStatus(StrEnum):
     FAILED = "failed"
 
 
+class ProviderIntegrationStatus(StrEnum):
+    UNCHECKED = "unchecked"
+    OK = "ok"
+    ERROR = "error"
+
+
 class NodeCapabilities(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -246,3 +252,33 @@ class JobRecord(BaseModel):
 class JobListResponse(BaseModel):
     items: list[JobRecord]
     total: int
+
+
+class ProviderIntegrationRecord(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    provider_id: str
+    display_name: str
+    api_key_set: bool
+    base_url: str | None = None
+    enabled: bool
+    status: ProviderIntegrationStatus
+    error_message: str | None = None
+
+
+class ProviderIntegrationUpsert(BaseModel):
+    display_name: str = Field(min_length=2)
+    api_key: str | None = Field(default=None, description="None = keep existing. Empty string = clear.")
+    base_url: str | None = None
+    enabled: bool = True
+
+
+class ProviderIntegrationListResponse(BaseModel):
+    items: list[ProviderIntegrationRecord]
+    total: int
+
+
+class ProviderTestResult(BaseModel):
+    ok: bool
+    message: str
+    models_synced: int = 0

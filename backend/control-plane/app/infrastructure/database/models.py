@@ -94,6 +94,19 @@ class KnowledgeDocumentOrm(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
 
 
+class ProviderIntegrationOrm(Base):
+    __tablename__ = "provider_integrations"
+
+    provider_id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    display_name: Mapped[str] = mapped_column(String(200))
+    api_key: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    base_url: Mapped[str | None] = mapped_column(String(512), nullable=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    status: Mapped[str] = mapped_column(String(40), default="unchecked")
+    error_message: Mapped[str | None] = mapped_column(String(1024), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
 class KnowledgeChunkOrm(Base):
     __tablename__ = "knowledge_chunks"
 

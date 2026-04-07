@@ -28,6 +28,9 @@ from clusterpilot_core.models import (
     NodeRecord,
     NodeRegistration,
     NodeStatus,
+    ProviderIntegrationRecord,
+    ProviderIntegrationStatus,
+    ProviderIntegrationUpsert,
 )
 from clusterpilot_core.settings import ControlPlaneSettings
 
