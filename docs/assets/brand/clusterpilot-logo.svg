@@ -1,12 +1,92 @@
-<svg width="640" height="220" viewBox="0 0 640 220" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="640" height="220" rx="28" fill="#18212F"/>
-  <circle cx="112" cy="110" r="56" fill="#FFF7EA"/>
-  <circle cx="112" cy="110" r="44" fill="#18212F"/>
-  <path d="M112 66L124 98L158 110L124 122L112 154L100 122L66 110L100 98L112 66Z" fill="#D95D39"/>
-  <path d="M112 86L119 103L138 110L119 117L112 134L105 117L86 110L105 103L112 86Z" fill="#FFF7EA"/>
-  <path d="M210 78H241.5C256.688 78 269 90.3122 269 105.5C269 120.688 256.688 133 241.5 133H210V78Z" fill="#D95D39"/>
-  <path d="M285 78H316.5C331.688 78 344 90.3122 344 105.5C344 120.688 331.688 133 316.5 133H285V78Z" fill="#207868"/>
-  <path d="M360 78H391.5C406.688 78 419 90.3122 419 105.5C419 120.688 406.688 133 391.5 133H360V78Z" fill="#F0B24C"/>
-  <text x="452" y="108" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="1">ClusterPilot</text>
-  <text x="453" y="141" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="500">Plug. Inspect. Schedule. Train.</text>
+<svg width="660" height="200" viewBox="0 0 660 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- ── Background ── -->
+  <rect width="660" height="200" rx="24" fill="#18212F"/>
+
+  <!-- ═══════════════════════════════════════
+       ICON — circular badge with hexagonal
+       cluster network (6 worker nodes + 1
+       central control-plane "pilot" node)
+  ═══════════════════════════════════════ -->
+
+  <!-- Badge background -->
+  <circle cx="100" cy="100" r="70" fill="#1C2B3F"/>
+  <!-- Badge border — brand red -->
+  <circle cx="100" cy="100" r="70" stroke="#D95D39" stroke-width="2.5" fill="none" opacity="0.8"/>
+
+  <!-- Subtle orbit ring at the hexagonal radius -->
+  <circle cx="100" cy="100" r="46" stroke="#FFFFFF" stroke-width="1" stroke-dasharray="3 6" opacity="0.10" fill="none"/>
+
+  <!-- ── Hub-spoke connection lines (center → 6 nodes) ── -->
+  <!-- Right      --> <line x1="100" y1="100" x2="146" y2="100" stroke="#FFF7EA" stroke-width="1.5" opacity="0.18"/>
+  <!-- Upper-right --> <line x1="100" y1="100" x2="123" y2="60"  stroke="#FFF7EA" stroke-width="1.5" opacity="0.18"/>
+  <!-- Upper-left  --> <line x1="100" y1="100" x2="77"  y2="60"  stroke="#FFF7EA" stroke-width="1.5" opacity="0.18"/>
+  <!-- Left        --> <line x1="100" y1="100" x2="54"  y2="100" stroke="#FFF7EA" stroke-width="1.5" opacity="0.18"/>
+  <!-- Lower-left  --> <line x1="100" y1="100" x2="77"  y2="140" stroke="#FFF7EA" stroke-width="1.5" opacity="0.18"/>
+  <!-- Lower-right --> <line x1="100" y1="100" x2="123" y2="140" stroke="#FFF7EA" stroke-width="1.5" opacity="0.18"/>
+
+  <!-- ── Hexagonal ring connection lines (adjacent nodes) ── -->
+  <line x1="146" y1="100" x2="123" y2="60"  stroke="#FFF7EA" stroke-width="1" opacity="0.09"/>
+  <line x1="123" y1="60"  x2="77"  y2="60"  stroke="#FFF7EA" stroke-width="1" opacity="0.09"/>
+  <line x1="77"  y1="60"  x2="54"  y2="100" stroke="#FFF7EA" stroke-width="1" opacity="0.09"/>
+  <line x1="54"  y1="100" x2="77"  y2="140" stroke="#FFF7EA" stroke-width="1" opacity="0.09"/>
+  <line x1="77"  y1="140" x2="123" y2="140" stroke="#FFF7EA" stroke-width="1" opacity="0.09"/>
+  <line x1="123" y1="140" x2="146" y2="100" stroke="#FFF7EA" stroke-width="1" opacity="0.09"/>
+
+  <!-- ── Outer worker nodes (hexagonal positions, R=46) ── -->
+  <!-- Right       → coral red -->
+  <circle cx="146" cy="100" r="9"  fill="#D95D39"/>
+  <circle cx="146" cy="100" r="4"  fill="#FFF7EA" opacity="0.55"/>
+  <!-- Upper-right → amber -->
+  <circle cx="123" cy="60"  r="9"  fill="#F0B24C"/>
+  <circle cx="123" cy="60"  r="4"  fill="#FFF7EA" opacity="0.55"/>
+  <!-- Upper-left  → teal -->
+  <circle cx="77"  cy="60"  r="9"  fill="#207868"/>
+  <circle cx="77"  cy="60"  r="4"  fill="#FFF7EA" opacity="0.55"/>
+  <!-- Left        → slate blue -->
+  <circle cx="54"  cy="100" r="9"  fill="#4A8CB4"/>
+  <circle cx="54"  cy="100" r="4"  fill="#FFF7EA" opacity="0.55"/>
+  <!-- Lower-left  → amber -->
+  <circle cx="77"  cy="140" r="9"  fill="#F0B24C"/>
+  <circle cx="77"  cy="140" r="4"  fill="#FFF7EA" opacity="0.55"/>
+  <!-- Lower-right → teal -->
+  <circle cx="123" cy="140" r="9"  fill="#207868"/>
+  <circle cx="123" cy="140" r="4"  fill="#FFF7EA" opacity="0.55"/>
+
+  <!-- ── Central "pilot" node (control plane) ── -->
+  <!-- Outer glow ring -->
+  <circle cx="100" cy="100" r="22" fill="#D95D39" opacity="0.18"/>
+  <!-- Main disc -->
+  <circle cx="100" cy="100" r="17" fill="#D95D39"/>
+  <!-- Pilot direction chevron — white, pointing right -->
+  <path d="M 93 96 L 105 100 L 93 104"
+        stroke="#FFF7EA" stroke-width="2.8"
+        stroke-linecap="round" stroke-linejoin="round"
+        fill="none"/>
+
+  <!-- ═══════════════════════════════════════
+       VERTICAL SEPARATOR
+  ═══════════════════════════════════════ -->
+  <line x1="178" y1="38" x2="178" y2="162"
+        stroke="#2A3A50" stroke-width="1.5"/>
+
+  <!-- ═══════════════════════════════════════
+       WORDMARK
+  ═══════════════════════════════════════ -->
+  <!-- Primary wordmark — "Cluster" light + "Pilot" bold -->
+  <text x="196" y="106"
+        font-family="Segoe UI, Inter, Arial, sans-serif"
+        font-size="48"
+        letter-spacing="-0.5">
+    <tspan fill="#8090A8" font-weight="300">Cluster</tspan><tspan fill="#FFF7EA" font-weight="700">Pilot</tspan>
+  </text>
+
+  <!-- Tagline -->
+  <text x="198" y="138"
+        fill="#4A5E74"
+        font-family="Segoe UI, Inter, Arial, sans-serif"
+        font-size="14.5"
+        font-weight="400"
+        letter-spacing="0.8">Plug · Inspect · Schedule · Train</text>
+
 </svg>
