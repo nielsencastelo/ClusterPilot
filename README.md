@@ -14,232 +14,292 @@
 
 ---
 
-ClusterPilot is a distributed orchestration framework built specifically for AI training across heterogeneous CPU, GPU, and NPU clusters. Unlike general-purpose schedulers, ClusterPilot is **AI-native by design**: each orchestration function — placement, rebalancing, policy enforcement — is driven by a configurable LLM agent, not a fixed algorithm. The entire stack runs locally with a single `docker compose up`.
+ClusterPilot is a distributed orchestration framework built for AI training across heterogeneous CPU, GPU, and NPU clusters. The platform is AI-native by design: orchestration functions such as planning, policy, and rebalancing can be driven by configurable agents, while the frontend focuses on management and observability.
 
-## Why ClusterPilot?
+## What Is In The Stack
 
-![Framework Comparison](docs/assets/diagrams/framework-comparison.svg)
+- `backend/core`: backend domain models and settings
+- `backend/control-plane`: FastAPI control plane
+- `backend/worker-agent`: runtime-side worker process
+- `frontend/web-dashboard`: Next.js management UI
+- `PostgreSQL`: persistent state
+- `Redis`: Celery broker and result backend
+- `Celery`: background job and indexing work
+- `Ollama`: local embedding runtime option
 
-Existing tools are powerful but generic. **Ray** is a Python distributed computing library that requires manual task and actor management. **Kubernetes** is a container orchestrator with steep YAML overhead and no ML-specific primitives. **SLURM** is built for HPC batch jobs and lacks modern AI workflow APIs. None of them ship with AI-powered scheduling decisions, a live web dashboard, or typed cross-language contracts out of the box.
+## Why ClusterPilot
 
-ClusterPilot fills that gap:
-
-- **AI-powered control plane** — Planner, Rebalance, and Policy agents each run an LLM of your choice, making scheduling decisions from real hardware signals rather than fixed rules.
-- **Model catalog** — register cloud and local models, assign them to specific agents, override prompts and temperature per agent.
-- **Hardware-first inventory** — every worker node reports CPU, RAM, GPU/NPU devices, CUDA/ROCm capability, and available runtimes before any job is placed.
-- **Unified typed contracts** — `clusterpilot-core` ships mirrored Pydantic (Python) and TypeScript models so the API surface is consistent end-to-end.
-- **Zero-config local deployment** — three services, one compose file, works offline.
-
----
+- AI-oriented control plane instead of a generic scheduler-only mindset
+- model catalog and per-agent model policy
+- prompt customization per agent
+- per-agent knowledge bases with semantic retrieval
+- worker inventory and heartbeat pipeline
+- local-first deployment through Docker Compose
 
 ## Architecture Overview
 
 ![ClusterPilot Architecture](docs/assets/diagrams/clusterpilot-overview.svg)
 
-ClusterPilot is organized into three integrated layers:
+The current platform is organized into three layers:
 
 | Layer | Component | Responsibility |
 |---|---|---|
-| **Control Plane** | `backend/control-plane` | FastAPI REST API, node registry, job queue, AI intelligence agents |
-| **Worker Agent** | `backend/worker-agent` | Per-node process: inventory, heartbeat, execution, telemetry, artifact |
-| **Web Dashboard** | `frontend/web-dashboard` | Next.js app for cluster monitoring, job management, agent/model config |
-
-Shared contracts live in `backend/core/clusterpilot_core` and are mirrored in `frontend/web-dashboard/lib/types.ts`.
-
----
+| Control Plane | `backend/control-plane` | REST API, persistence, async orchestration, knowledge indexing |
+| Worker Agent | `backend/worker-agent` | Node runtime: inventory, heartbeat, execution prep, telemetry prep |
+| Web Dashboard | `frontend/web-dashboard` | Configuration, monitoring, model management, agent management, knowledge management |
 
 ## Agent Model
 
-![Agent Pipeline](docs/assets/diagrams/agent-pipeline.svg)
+![Agent Roles](docs/assets/diagrams/agent-roles.svg)
 
-ClusterPilot defines **8 named agents** across two sides of the system:
-
-### Worker-side agents (run on each node)
-
-| Agent | Role | Output contract |
-|---|---|---|
-| `inventory` | Scans CPU, RAM, disk, GPU/NPU, runtimes | `NodeCapabilities` |
-| `heartbeat` | Publishes liveness: CPU %, mem %, GPU %, active jobs | `NodeHeartbeat` |
-| `execution` | Receives dispatched jobs, provisions env, runs scripts | `JobRecord` status updates |
-| `telemetry` | Streams structured logs, GPU utilization, memory pressure | Metrics · Logs |
-| `artifact` | Tracks and syncs model checkpoints and weights | Artifact manifests |
-
-### Control-plane AI agents
+### Worker-side agents
 
 | Agent | Role |
 |---|---|
-| `planner` | Selects target nodes for queued jobs based on hardware signals |
-| `rebalance` | Redistributes load across the cluster when nodes degrade or recover |
-| `policy` | Enforces runtime rules: priority, preemption, SLA constraints |
+| `inventory` | Scans CPU, RAM, disk, GPU/NPU, runtimes |
+| `heartbeat` | Publishes liveness and runtime state |
+| `execution` | Prepares job workspaces and future execution flow |
+| `telemetry` | Produces runtime heartbeat payloads and future metrics |
+| `artifact` | Prepares artifact storage locations |
 
-Each agent has an independently configurable LLM backend: provider, model ID, system prompt, custom prompt, temperature, and a manual override flag. Configuration is live — changes take effect without restarting any service.
+### Control-plane agents
 
----
+| Agent | Role |
+|---|---|
+| `planner` | Placement and node selection |
+| `rebalance` | Future load redistribution |
+| `policy` | Runtime rule enforcement |
+
+Each agent can be configured with:
+
+- provider
+- model
+- system prompt
+- custom prompt
+- temperature
+- manual override flag
+
+Each agent can also own its own knowledge base, isolated from the others.
 
 ## Control Plane API
 
 ![API Responsibilities](docs/assets/diagrams/api-responsibilities.svg)
 
-### Node management
+### Nodes
 
-| Method | Route | Description |
-|---|---|---|
-| `GET` | `/health` | Service readiness check |
-| `POST` | `/api/v1/nodes/register` | Register a new worker node with full capability inventory |
-| `GET` | `/api/v1/nodes` | List all registered nodes with current status |
-| `POST` | `/api/v1/nodes/{node_id}/heartbeat` | Update node liveness and runtime metrics |
+| Method | Route |
+|---|---|
+| `GET` | `/health` |
+| `POST` | `/api/v1/nodes/register` |
+| `GET` | `/api/v1/nodes` |
+| `POST` | `/api/v1/nodes/{node_id}/heartbeat` |
 
-### Job queue
+### Jobs
 
-| Method | Route | Description |
-|---|---|---|
-| `POST` | `/api/v1/jobs` | Submit a new training job with hardware requirements |
-| `GET` | `/api/v1/jobs` | List all jobs and current status |
+| Method | Route |
+|---|---|
+| `POST` | `/api/v1/jobs` |
+| `GET` | `/api/v1/jobs` |
 
-### Model and agent configuration
+### Models and agent policies
 
-| Method | Route | Description |
-|---|---|---|
-| `GET` | `/api/v1/models/catalog` | List registered model catalog entries |
-| `POST` | `/api/v1/models/catalog` | Register or update a model in the catalog |
-| `GET` | `/api/v1/agents/config` | Get per-agent model and prompt configuration |
-| `PUT` | `/api/v1/agents/config/{agent_name}` | Update a specific agent's LLM configuration |
+| Method | Route |
+|---|---|
+| `GET` | `/api/v1/models/catalog` |
+| `POST` | `/api/v1/models/catalog` |
+| `GET` | `/api/v1/agents/config` |
+| `PUT` | `/api/v1/agents/config/{agent_name}` |
 
----
+### Knowledge and embeddings
+
+| Method | Route |
+|---|---|
+| `GET` | `/api/v1/knowledge/documents/{agent_name}` |
+| `POST` | `/api/v1/knowledge/documents/{agent_name}` |
+| `POST` | `/api/v1/knowledge/search` |
+| `GET` | `/api/v1/knowledge/embedding-config` |
+| `PUT` | `/api/v1/knowledge/embedding-config` |
+
+## Knowledge Layer
+
+The system now supports knowledge indexing per agent.
+
+Supported formats:
+
+- `pdf`
+- `txt`
+- `json`
+
+How it works:
+
+1. a document is uploaded to a specific agent collection
+2. metadata is persisted in PostgreSQL
+3. Celery picks up the indexing task
+4. the document is parsed and chunked
+5. embeddings are generated with the configured embedding runtime
+6. chunks are persisted and become searchable only for that agent
+
+This means the `planner` can search a different context base than `execution`, `policy`, or `telemetry`.
+
+## Embeddings
+
+The embedding runtime is persisted and manageable from the frontend.
+
+Current practical default:
+
+- provider: `ollama`
+- model: `nomic-embed-text`
+- base URL: `http://ollama:11434`
+
+This makes it possible to run local embeddings without depending on a cloud provider.
 
 ## Web Dashboard
 
 ![Frontend Responsibilities](docs/assets/diagrams/frontend-responsibilities.svg)
 
-The Next.js dashboard connects to the control plane and provides:
+The dashboard currently exposes:
 
-**Main page (`/`)**
-- Cluster summary cards (total nodes, online, degraded, queued jobs)
-- Node inventory table with live status, capabilities, and heartbeat metrics
-- Job queue table with status, runtime, and requirements
+### `/`
 
-**Agent configuration (`/agents`)**
-- Per-agent model selector from the registered catalog
-- Custom system prompt and temperature overrides
-- Enable/disable individual agents
+- cluster summary cards
+- node inventory
+- job queue
+- shortcuts to model, agent, and knowledge management
 
-**Model catalog (`/models`)**
-- Register cloud (OpenAI, Anthropic, etc.) and local models
-- Tag models and set recommended agents per model
+### `/models`
 
----
+- register available models
+- mark recommended agents
+- configure the embedding generator used by the knowledge layer
+
+### `/agents`
+
+- choose a model per agent
+- define custom prompt and system prompt
+- tune temperature and enable/disable policies
+
+### `/knowledge`
+
+- upload `pdf`, `txt`, and `json` documents
+- manage a per-agent knowledge base
+- run semantic search inside one selected agent collection
 
 ## Quick Start
 
-### Docker Compose (recommended)
+### Docker Compose
 
 ```bash
-git clone https://github.com/your-org/clusterpilot.git
-cd clusterpilot
 docker compose up --build
 ```
+
+### Local endpoints
 
 | Service | URL |
 |---|---|
 | Control Plane API | `http://localhost:8000` |
+| Swagger | `http://localhost:8000/docs` |
 | Web Dashboard | `http://localhost:3000` |
-| API docs (Swagger) | `http://localhost:8000/docs` |
+| PostgreSQL | `localhost:5432` |
+| Redis | `localhost:6379` |
+| Ollama | `http://localhost:11434` |
 
-The compose stack wires all services automatically. The worker agent registers itself on startup and begins sending heartbeats every 10 seconds.
+The compose stack wires:
 
-### Manual setup
-
-**Control plane:**
-
-```bash
-cd backend/control-plane
-pip install -e ../../backend/core
-pip install -e .
-uvicorn app.main:app --reload --port 8000
-```
-
-**Worker agent:**
-
-```bash
-cd backend/worker-agent
-pip install -e ../../backend/core
-pip install -e .
-python -m clusterpilot_agent
-```
-
-**Web dashboard:**
-
-```bash
-cd frontend/web-dashboard
-npm install
-npm run dev   # → http://localhost:3000
-```
-
----
+- API to PostgreSQL
+- API and Celery to Redis
+- API and Celery to the shared knowledge storage volume
+- API and frontend to Ollama-configured embedding settings
 
 ## Configuration Reference
 
-### Worker Agent
-
-| Variable | Default | Description |
-|---|---|---|
-| `CLUSTERPILOT_CONTROL_PLANE_URL` | `http://localhost:8000` | Control plane base URL |
-| `CLUSTERPILOT_NODE_ID` | hostname | Unique identifier for this node |
-| `CLUSTERPILOT_NODE_NAME` | hostname | Display name for this node |
-| `CLUSTERPILOT_HEARTBEAT_SECONDS` | `10` | Heartbeat interval in seconds |
-
-### Web Dashboard
+### Control Plane
 
 | Variable | Description |
 |---|---|
-| `CLUSTERPILOT_API_BASE_URL` | Server-side API URL (used for SSR) |
-| `NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL` | Client-side API URL (used in browser) |
+| `CLUSTERPILOT_DATABASE_URL` | PostgreSQL connection string |
+| `CLUSTERPILOT_CELERY_BROKER_URL` | Redis broker URL |
+| `CLUSTERPILOT_CELERY_RESULT_BACKEND` | Redis result backend |
+| `CLUSTERPILOT_KNOWLEDGE_STORAGE_PATH` | Shared path for uploaded knowledge documents |
 
----
+### Worker Agent
+
+| Variable | Description |
+|---|---|
+| `CLUSTERPILOT_CONTROL_PLANE_URL` | Control plane base URL |
+| `CLUSTERPILOT_NODE_ID` | Unique identifier for the node |
+| `CLUSTERPILOT_NODE_NAME` | Display name for the node |
+| `CLUSTERPILOT_HEARTBEAT_SECONDS` | Heartbeat interval |
+
+### Frontend
+
+| Variable | Description |
+|---|---|
+| `CLUSTERPILOT_API_BASE_URL` | Server-side API URL |
+| `NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL` | Browser API URL |
 
 ## Repository Structure
 
 ```text
 backend/
-  control-plane/          FastAPI control plane service
+  core/
+    clusterpilot_core/
+  control-plane/
     app/
-      api/routers/        nodes · jobs · model_management
-      application/        job_service · node_service · model_service
-      infrastructure/     in-memory repositories (Redis-ready)
-  worker-agent/           Python worker process
-    clusterpilot_agent/   inventory · heartbeat · execution · telemetry · artifact agents
-  core/                   clusterpilot_core — shared Pydantic models and settings
+      api/routers/
+      application/services/
+      infrastructure/database/
+      infrastructure/repositories/
+      worker/
+  worker-agent/
+    clusterpilot_agent/
 
 frontend/
-  web-dashboard/          Next.js 15 dashboard
-    app/                  / (cluster view) · /agents · /models
-    components/           agent-config-manager · model-catalog-manager
-    lib/                  api.ts · types.ts (mirrored from core)
+  web-dashboard/
+    app/
+    components/
+    lib/
 
 docs/
   assets/
-    brand/                clusterpilot-logo.svg
-    diagrams/             architecture · agent pipeline · API · comparison
-  superpowers/specs/      design documents
+  superpowers/specs/
 ```
 
----
+## Main Backend Contracts
 
-## Core Data Contracts
+Key models in `backend/core/clusterpilot_core/models.py`:
 
-All API payloads are defined in `backend/core/clusterpilot_core/models.py` and mirrored to TypeScript in `frontend/web-dashboard/lib/types.ts`.
+- `NodeCapabilities`
+- `NodeHeartbeat`
+- `NodeRecord`
+- `JobRecord`
+- `ModelCatalogItem`
+- `AgentModelConfig`
+- `EmbeddingRuntimeConfig`
+- `KnowledgeDocumentRecord`
+- `KnowledgeSearchResult`
 
-**Key models:**
+## Validation
 
-- `NodeCapabilities` — CPU cores, RAM, disk, GPU/NPU count, OS, Python version, runtime versions, labels, metadata
-- `NodeHeartbeat` — CPU %, memory %, GPU %, active job count, optional status message
-- `NodeRecord` — full node state including capabilities, heartbeat snapshot, timestamps, and `NodeStatus` (online / degraded / offline)
-- `JobRecord` — job ID, runtime, entrypoint, arguments, `JobRequirements` (min CPU, min RAM, min GPU, network profile), status, timestamps
-- `AgentModelConfig` — per-agent LLM provider, model ID, prompts, temperature, enable flag
-- `ModelCatalogItem` — provider, model, label, source (local/cloud), availability, recommended agents
+Validated in this iteration:
 
----
+- backend Python modules compile with `py_compile`
+- `docker compose config` resolves successfully
+
+Not executed yet:
+
+- full `docker compose up --build`
+- live indexing run against Ollama
+- end-to-end upload/search flow in the browser
+
+## Next Steps
+
+The next high-value steps are:
+
+1. complete real job execution flow in Celery and worker runtime
+2. persist logs, traces, and artifact metadata
+3. add retrieval-aware planner and policy flows
+4. add richer frontend management for per-agent knowledge collections
 
 ## License
 
-[MIT](LICENSE) — Nielsen
+[MIT](LICENSE) - Nielsen
