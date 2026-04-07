@@ -376,7 +376,7 @@ class SqlAlchemyKnowledgeRepository:
                     chunk_index=index,
                     text=text,
                     embedding=embedding,
-                    metadata=metadata,
+                    chunk_metadata=metadata,
                 )
             )
         document = await self.session.get(KnowledgeDocumentOrm, document_id)
@@ -418,7 +418,7 @@ class SqlAlchemyKnowledgeRepository:
                     agent_name=payload.agent_name,
                     text=item.text,
                     score=score,
-                    metadata=item.metadata,
+                    metadata=item.chunk_metadata,
                 )
             )
         ranked.sort(key=lambda item: item.score, reverse=True)

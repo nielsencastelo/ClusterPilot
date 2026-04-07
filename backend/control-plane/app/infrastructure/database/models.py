@@ -103,5 +103,5 @@ class KnowledgeChunkOrm(Base):
     chunk_index: Mapped[int] = mapped_column(Integer)
     text: Mapped[str] = mapped_column(Text)
     embedding: Mapped[list[float]] = mapped_column(JSON, default=list)
-    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    chunk_metadata: Mapped[dict] = mapped_column("metadata", JSON, default=dict)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
