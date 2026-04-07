@@ -10,7 +10,7 @@ from .bootstrap import configure_local_paths
 
 configure_local_paths()
 
-from clusterpilot_contracts.models import NodeCapabilities
+from clusterpilot_core.models import NodeCapabilities
 
 
 def _detect_cpu_count() -> int:

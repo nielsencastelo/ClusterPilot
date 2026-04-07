@@ -7,10 +7,11 @@ from .bootstrap import configure_local_paths
 
 configure_local_paths()
 
-from clusterpilot_contracts.models import NodeHeartbeat, NodeHeartbeatPayload, NodeRegistration, NodeStatus
+from clusterpilot_core.models import NodeHeartbeatPayload, NodeRegistration, NodeStatus
 
 from .config import AgentConfig
 from .inventory import collect_capabilities
+from .telemetry_agent import TelemetryAgent
 
 
 def _post_json(url: str, payload: dict) -> dict:
@@ -40,15 +41,10 @@ def register_node(config: AgentConfig) -> dict:
 
 
 def send_heartbeat(config: AgentConfig) -> dict:
+    telemetry_agent = TelemetryAgent()
     payload = NodeHeartbeatPayload(
         status=NodeStatus.ONLINE,
-        heartbeat=NodeHeartbeat(
-            cpu_percent=None,
-            memory_percent=None,
-            gpu_percent=None,
-            active_jobs=0,
-            message="worker-agent heartbeat",
-        ),
+        heartbeat=telemetry_agent.collect_runtime_heartbeat(),
     )
     return _post_json(
         f"{config.control_plane_url}/api/v1/nodes/{config.node_id}/heartbeat",

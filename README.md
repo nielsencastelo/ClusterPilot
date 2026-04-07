@@ -138,12 +138,3 @@ The worker agent currently uses these environment variables:
 The frontend uses:
 
 - `CLUSTERPILOT_API_BASE_URL`
-
-## Next Steps
-
-The next implementation milestone should focus on:
-
-1. persistent storage instead of in-memory state
-2. real job execution lifecycle inside the worker agent
-3. log and metric streaming
-4. initial scheduler heuristics
