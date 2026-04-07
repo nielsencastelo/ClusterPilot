@@ -1,0 +1,14 @@
+{
+  "name": "clusterpilot",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "frontend/web-dashboard",
+    "shared/core-contracts/web"
+  ],
+  "scripts": {
+    "dev:web": "npm --workspace frontend/web-dashboard run dev",
+    "build:web": "npm --workspace frontend/web-dashboard run build",
+    "lint:web": "npm --workspace frontend/web-dashboard run lint"
+  }
+}

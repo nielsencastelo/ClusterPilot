@@ -1,0 +1,47 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="32" fill="#F5EFE6"/>
+  <text x="60" y="70" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">ClusterPilot Architecture Overview</text>
+  <text x="60" y="106" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">Control plane, worker agents, shared contracts and web dashboard in one local-first slice.</text>
+
+  <rect x="70" y="150" width="1060" height="540" rx="28" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+
+  <rect x="110" y="210" width="260" height="150" rx="24" fill="#18212F"/>
+  <text x="140" y="250" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Frontend</text>
+  <text x="140" y="286" fill="#E0E6EE" font-family="Segoe UI, Arial, sans-serif" font-size="18">web-dashboard</text>
+  <text x="140" y="320" fill="#E0E6EE" font-family="Segoe UI, Arial, sans-serif" font-size="16">Next.js app</text>
+  <text x="140" y="346" fill="#E0E6EE" font-family="Segoe UI, Arial, sans-serif" font-size="16">Summary cards</text>
+
+  <rect x="470" y="190" width="300" height="200" rx="24" fill="#D95D39"/>
+  <text x="500" y="232" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Backend</text>
+  <text x="500" y="268" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">control-plane API</text>
+  <text x="500" y="300" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="16">Node registry</text>
+  <text x="500" y="326" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="16">Heartbeats</text>
+  <text x="500" y="352" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="16">Job queue</text>
+
+  <rect x="860" y="210" width="220" height="150" rx="24" fill="#207868"/>
+  <text x="890" y="250" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Shared</text>
+  <text x="890" y="286" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">core-contracts</text>
+  <text x="890" y="320" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="16">Python + TypeScript</text>
+  <text x="890" y="346" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="16">Typed schemas</text>
+
+  <rect x="210" y="470" width="660" height="160" rx="26" fill="#FFFFFF" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="240" y="514" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Worker Agent</text>
+  <rect x="240" y="540" width="130" height="54" rx="16" fill="#F0B24C"/>
+  <rect x="392" y="540" width="130" height="54" rx="16" fill="#F0B24C"/>
+  <rect x="544" y="540" width="130" height="54" rx="16" fill="#F0B24C"/>
+  <rect x="696" y="540" width="130" height="54" rx="16" fill="#F0B24C"/>
+  <text x="266" y="574" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">inventory</text>
+  <text x="418" y="574" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">heartbeat</text>
+  <text x="570" y="574" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">execution</text>
+  <text x="729" y="574" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="700">telemetry</text>
+
+  <path d="M370 284H470" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M770 284H860" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M620 390V470" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M280 362L380 470" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M960 362L800 470" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+
+  <text x="388" y="272" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">fetches</text>
+  <text x="786" y="272" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">uses</text>
+  <text x="636" y="438" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">reports to</text>
+</svg>

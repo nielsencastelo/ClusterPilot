@@ -1,0 +1,33 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="32" fill="#F5EFE6"/>
+  <text x="60" y="72" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Control Plane API</text>
+  <text x="60" y="108" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">Current FastAPI surface and the responsibility of each route group.</text>
+
+  <rect x="80" y="160" width="300" height="180" rx="24" fill="#18212F"/>
+  <text x="110" y="206" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Health</text>
+  <text x="110" y="244" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18">GET /health</text>
+  <text x="110" y="276" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="16">Proves API readiness</text>
+  <text x="110" y="302" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="16">Entry point for container health checks</text>
+
+  <rect x="450" y="160" width="300" height="220" rx="24" fill="#D95D39"/>
+  <text x="480" y="206" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Nodes</text>
+  <text x="480" y="244" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">POST /api/v1/nodes/register</text>
+  <text x="480" y="274" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">POST /api/v1/nodes/{id}/heartbeat</text>
+  <text x="480" y="304" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">GET /api/v1/nodes</text>
+  <text x="480" y="338" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="16">Tracks inventory, liveness and cluster state</text>
+
+  <rect x="820" y="160" width="300" height="220" rx="24" fill="#207868"/>
+  <text x="850" y="206" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Jobs</text>
+  <text x="850" y="244" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">POST /api/v1/jobs</text>
+  <text x="850" y="274" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">GET /api/v1/jobs</text>
+  <text x="850" y="308" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="16">Stores queued workloads and future planner inputs</text>
+
+  <rect x="220" y="470" width="760" height="180" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="260" y="520" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Current Store Behavior</text>
+  <text x="260" y="560" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">The current implementation uses in-memory state for fast iteration.</text>
+  <text x="260" y="592" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">It is intentionally simple so we can validate contracts, flows and dashboard integration before adding persistence.</text>
+
+  <path d="M380 250H450" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M750 270H820" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M600 380V470" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+</svg>

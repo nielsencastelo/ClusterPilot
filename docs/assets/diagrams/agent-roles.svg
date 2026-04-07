@@ -1,0 +1,34 @@
+<svg width="1200" height="920" viewBox="0 0 1200 920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="920" rx="32" fill="#F5EFE6"/>
+  <text x="60" y="72" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Agent Roles</text>
+  <text x="60" y="108" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">How each agent contributes to orchestration and observability.</text>
+
+  <rect x="70" y="160" width="500" height="210" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="100" y="206" fill="#D95D39" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Inventory Agent</text>
+  <text x="100" y="242" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18">Discovers CPU, memory, disk, GPU and runtime capabilities.</text>
+  <text x="100" y="274" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">Feeds node registration and placement eligibility.</text>
+
+  <rect x="630" y="160" width="500" height="210" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="660" y="206" fill="#D95D39" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Heartbeat Agent</text>
+  <text x="660" y="242" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18">Publishes liveness and lightweight runtime status.</text>
+  <text x="660" y="274" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">Keeps the control plane aware of healthy and degraded workers.</text>
+
+  <rect x="70" y="420" width="500" height="210" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="100" y="466" fill="#D95D39" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Execution Agent</text>
+  <text x="100" y="502" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18">Prepares workloads and will run scripts and runtimes.</text>
+  <text x="100" y="534" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">This is the future bridge between queued jobs and real training.</text>
+
+  <rect x="630" y="420" width="500" height="210" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="660" y="466" fill="#D95D39" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Telemetry Agent</text>
+  <text x="660" y="502" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="18">Streams logs, runtime metrics and future job traces.</text>
+  <text x="660" y="534" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="16">Makes cluster behavior visible in the dashboard and planner.</text>
+
+  <rect x="240" y="700" width="720" height="130" rx="24" fill="#18212F"/>
+  <text x="280" y="748" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">Control Plane Policy Layer</text>
+  <text x="280" y="786" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">Planner and policy modules consume agent signals to decide eligibility, queue state and future placement logic.</text>
+
+  <path d="M570 265H630" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M570 525H630" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M320 630L470 700" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M880 630L730 700" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+</svg>

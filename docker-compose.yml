@@ -1,0 +1,33 @@
+services:
+  control-plane:
+    build:
+      context: .
+      dockerfile: backend/control-plane/Dockerfile
+    container_name: clusterpilot-control-plane
+    ports:
+      - "8000:8000"
+
+  worker-agent:
+    build:
+      context: .
+      dockerfile: backend/worker-agent/Dockerfile
+    container_name: clusterpilot-worker-agent
+    depends_on:
+      - control-plane
+    environment:
+      CLUSTERPILOT_CONTROL_PLANE_URL: http://control-plane:8000
+      CLUSTERPILOT_NODE_ID: docker-worker-01
+      CLUSTERPILOT_NODE_NAME: docker-worker-01
+      CLUSTERPILOT_HEARTBEAT_SECONDS: 10
+
+  web-dashboard:
+    build:
+      context: .
+      dockerfile: frontend/web-dashboard/Dockerfile
+    container_name: clusterpilot-web-dashboard
+    depends_on:
+      - control-plane
+    environment:
+      CLUSTERPILOT_API_BASE_URL: http://control-plane:8000
+    ports:
+      - "3000:3000"

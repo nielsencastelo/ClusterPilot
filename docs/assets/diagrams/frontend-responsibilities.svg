@@ -1,0 +1,35 @@
+<svg width="1200" height="760" viewBox="0 0 1200 760" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="760" rx="32" fill="#F5EFE6"/>
+  <text x="60" y="72" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="34" font-weight="700">Frontend Dashboard</text>
+  <text x="60" y="108" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">What the current Next.js layer already visualizes from the control plane.</text>
+
+  <rect x="90" y="160" width="320" height="210" rx="24" fill="#18212F"/>
+  <text x="122" y="206" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Summary Layer</text>
+  <text x="122" y="246" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18">Registered nodes</text>
+  <text x="122" y="276" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18">Online nodes</text>
+  <text x="122" y="306" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18">Queued jobs</text>
+  <text x="122" y="336" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18">Discovered GPUs</text>
+
+  <rect x="440" y="160" width="320" height="210" rx="24" fill="#D95D39"/>
+  <text x="472" y="206" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Nodes Table</text>
+  <text x="472" y="246" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">Status</text>
+  <text x="472" y="276" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">CPU / memory / GPU</text>
+  <text x="472" y="306" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">Tags and addresses</text>
+  <text x="472" y="338" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="18">Empty-state guidance</text>
+
+  <rect x="790" y="160" width="320" height="210" rx="24" fill="#207868"/>
+  <text x="822" y="206" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700">Jobs Table</text>
+  <text x="822" y="246" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">Runtime and entrypoint</text>
+  <text x="822" y="276" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">Requirements</text>
+  <text x="822" y="306" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">Queue status</text>
+  <text x="822" y="338" fill="#E7FFF9" font-family="Segoe UI, Arial, sans-serif" font-size="18">Initial operator visibility</text>
+
+  <rect x="200" y="460" width="800" height="170" rx="24" fill="#FFF9F1" stroke="#D8D0C3" stroke-width="2"/>
+  <text x="240" y="510" fill="#18212F" font-family="Segoe UI, Arial, sans-serif" font-size="28" font-weight="700">API Consumption Pattern</text>
+  <text x="240" y="550" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">The dashboard currently fetches `/api/v1/nodes` and `/api/v1/jobs` directly.</text>
+  <text x="240" y="582" fill="#546174" font-family="Segoe UI, Arial, sans-serif" font-size="18">If the API is unavailable, it falls back to empty but stable UI states.</text>
+
+  <path d="M410 265H440" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M760 265H790" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+  <path d="M600 370V460" stroke="#18212F" stroke-width="4" stroke-linecap="round"/>
+</svg>

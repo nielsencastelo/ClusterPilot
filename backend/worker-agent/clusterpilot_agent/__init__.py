@@ -1,0 +1,1 @@
+"""ClusterPilot worker agent package."""

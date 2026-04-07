@@ -1,0 +1,12 @@
+<svg width="640" height="220" viewBox="0 0 640 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="220" rx="28" fill="#18212F"/>
+  <circle cx="112" cy="110" r="56" fill="#FFF7EA"/>
+  <circle cx="112" cy="110" r="44" fill="#18212F"/>
+  <path d="M112 66L124 98L158 110L124 122L112 154L100 122L66 110L100 98L112 66Z" fill="#D95D39"/>
+  <path d="M112 86L119 103L138 110L119 117L112 134L105 117L86 110L105 103L112 86Z" fill="#FFF7EA"/>
+  <path d="M210 78H241.5C256.688 78 269 90.3122 269 105.5C269 120.688 256.688 133 241.5 133H210V78Z" fill="#D95D39"/>
+  <path d="M285 78H316.5C331.688 78 344 90.3122 344 105.5C344 120.688 331.688 133 316.5 133H285V78Z" fill="#207868"/>
+  <path d="M360 78H391.5C406.688 78 419 90.3122 419 105.5C419 120.688 406.688 133 391.5 133H360V78Z" fill="#F0B24C"/>
+  <text x="452" y="108" fill="#FFF7EA" font-family="Segoe UI, Arial, sans-serif" font-size="42" font-weight="700" letter-spacing="1">ClusterPilot</text>
+  <text x="453" y="141" fill="#D2D9E3" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="500">Plug. Inspect. Schedule. Train.</text>
+</svg>
