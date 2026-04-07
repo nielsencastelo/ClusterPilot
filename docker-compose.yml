@@ -42,6 +42,12 @@ services:
       - "8000:8000"
     volumes:
       - knowledge_data:/data/knowledge
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   celery-worker:
     build:
@@ -66,7 +72,8 @@ services:
       dockerfile: backend/worker-agent/Dockerfile
     container_name: clusterpilot-worker-agent
     depends_on:
-      - control-plane
+      control-plane:
+        condition: service_healthy
     environment:
       CLUSTERPILOT_CONTROL_PLANE_URL: http://control-plane:8000
       CLUSTERPILOT_NODE_ID: docker-worker-01
@@ -79,7 +86,8 @@ services:
       dockerfile: frontend/web-dashboard/Dockerfile
     container_name: clusterpilot-web-dashboard
     depends_on:
-      - control-plane
+      control-plane:
+        condition: service_healthy
     environment:
       CLUSTERPILOT_API_BASE_URL: http://control-plane:8000
       NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL: http://localhost:8000

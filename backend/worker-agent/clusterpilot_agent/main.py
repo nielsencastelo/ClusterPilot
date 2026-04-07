@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import time
+from urllib.error import URLError
 
 from .artifact_agent import ArtifactAgent
 from .config import get_config
@@ -21,10 +22,22 @@ def main() -> None:
     inventory_agent.collect()
     execution_agent.prepare_workspace("bootstrap")
     artifact_agent.resolve_artifact_dir("bootstrap")
-    register_node(config)
+
     while True:
-        heartbeat_agent.send(config)
-        print("Heartbeat sent successfully.")
+        try:
+            register_node(config)
+            print("Worker registered successfully.")
+            break
+        except URLError as exc:
+            print(f"Control plane unavailable during registration: {exc}. Retrying in 5 seconds.")
+            time.sleep(5)
+
+    while True:
+        try:
+            heartbeat_agent.send(config)
+            print("Heartbeat sent successfully.")
+        except URLError as exc:
+            print(f"Heartbeat failed: {exc}. Retrying in {config.heartbeat_interval_seconds} seconds.")
         time.sleep(config.heartbeat_interval_seconds)
 
 
