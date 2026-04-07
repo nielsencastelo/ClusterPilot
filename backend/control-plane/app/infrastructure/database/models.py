@@ -66,3 +66,42 @@ class AgentConfigOrm(Base):
     system_prompt: Mapped[str | None] = mapped_column(Text, nullable=True)
     temperature: Mapped[float] = mapped_column(Float, default=0.2)
     manual_override: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class EmbeddingConfigOrm(Base):
+    __tablename__ = "embedding_runtime_config"
+
+    config_id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
+    provider: Mapped[str] = mapped_column(String(120))
+    model: Mapped[str] = mapped_column(String(200))
+    base_url: Mapped[str] = mapped_column(String(255))
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    dimensions: Mapped[int | None] = mapped_column(Integer, nullable=True)
+
+
+class KnowledgeDocumentOrm(Base):
+    __tablename__ = "knowledge_documents"
+
+    document_id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    agent_name: Mapped[str] = mapped_column(String(120))
+    filename: Mapped[str] = mapped_column(String(255))
+    content_type: Mapped[str] = mapped_column(String(120))
+    source_path: Mapped[str] = mapped_column(String(500))
+    checksum: Mapped[str] = mapped_column(String(128))
+    status: Mapped[str] = mapped_column(String(40))
+    chunk_count: Mapped[int] = mapped_column(Integer, default=0)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)
+
+
+class KnowledgeChunkOrm(Base):
+    __tablename__ = "knowledge_chunks"
+
+    chunk_id: Mapped[str] = mapped_column(String(120), primary_key=True)
+    document_id: Mapped[str] = mapped_column(String(120), index=True)
+    agent_name: Mapped[str] = mapped_column(String(120), index=True)
+    chunk_index: Mapped[int] = mapped_column(Integer)
+    text: Mapped[str] = mapped_column(Text)
+    embedding: Mapped[list[float]] = mapped_column(JSON, default=list)
+    metadata: Mapped[dict] = mapped_column(JSON, default=dict)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utc_now)

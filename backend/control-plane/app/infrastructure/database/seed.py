@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from clusterpilot_core.models import AgentName, ModelSource, ModelStatus
 
-from .models import AgentConfigOrm, ModelCatalogOrm
+from .models import AgentConfigOrm, EmbeddingConfigOrm, ModelCatalogOrm
 
 
 async def seed_initial_data(session: AsyncSession) -> None:
@@ -73,6 +73,19 @@ async def seed_initial_data(session: AsyncSession) -> None:
                     manual_override=False,
                 ),
             ]
+        )
+
+    embedding_exists = await session.scalar(select(EmbeddingConfigOrm.config_id).limit(1))
+    if embedding_exists is None:
+        session.add(
+            EmbeddingConfigOrm(
+                config_id=1,
+                provider="ollama",
+                model="nomic-embed-text",
+                base_url="http://ollama:11434",
+                enabled=True,
+                dimensions=None,
+            )
         )
 
     await session.commit()

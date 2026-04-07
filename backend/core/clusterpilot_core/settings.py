@@ -20,6 +20,10 @@ class ControlPlaneSettings:
         "CLUSTERPILOT_CELERY_RESULT_BACKEND",
         "redis://redis:6379/1",
     )
+    knowledge_storage_path: str = os.getenv(
+        "CLUSTERPILOT_KNOWLEDGE_STORAGE_PATH",
+        "/data/knowledge",
+    )
     allowed_origins: tuple[str, ...] = (
         "http://localhost:3000",
         "http://127.0.0.1:3000",

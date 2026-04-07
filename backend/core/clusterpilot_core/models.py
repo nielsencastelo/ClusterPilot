@@ -50,6 +50,13 @@ class ModelStatus(StrEnum):
     UNKNOWN = "unknown"
 
 
+class KnowledgeDocumentStatus(StrEnum):
+    PENDING = "pending"
+    INDEXING = "indexing"
+    INDEXED = "indexed"
+    FAILED = "failed"
+
+
 class NodeCapabilities(BaseModel):
     model_config = ConfigDict(extra="allow")
 
@@ -148,6 +155,52 @@ class AgentModelConfig(BaseModel):
 
 class AgentConfigListResponse(BaseModel):
     items: list[AgentModelConfig]
+    total: int
+
+
+class EmbeddingRuntimeConfig(BaseModel):
+    provider: str = Field(default="ollama", min_length=2)
+    model: str = Field(default="nomic-embed-text", min_length=2)
+    base_url: str = Field(default="http://ollama:11434", min_length=8)
+    enabled: bool = True
+    dimensions: int | None = Field(default=None, ge=1)
+
+
+class KnowledgeDocumentRecord(BaseModel):
+    document_id: str
+    agent_name: AgentName
+    filename: str
+    content_type: str
+    source_path: str
+    checksum: str
+    status: KnowledgeDocumentStatus
+    chunk_count: int = 0
+    created_at: datetime
+    updated_at: datetime
+
+
+class KnowledgeDocumentListResponse(BaseModel):
+    items: list[KnowledgeDocumentRecord]
+    total: int
+
+
+class KnowledgeSearchResult(BaseModel):
+    chunk_id: str
+    document_id: str
+    agent_name: AgentName
+    text: str
+    score: float
+    metadata: dict[str, Any] = Field(default_factory=dict)
+
+
+class KnowledgeSearchRequest(BaseModel):
+    agent_name: AgentName
+    query: str = Field(min_length=3)
+    top_k: int = Field(default=5, ge=1, le=20)
+
+
+class KnowledgeSearchResponse(BaseModel):
+    items: list[KnowledgeSearchResult]
     total: int
 
 

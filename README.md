@@ -240,22 +240,6 @@ All API payloads are defined in `backend/core/clusterpilot_core/models.py` and m
 
 ---
 
-## Roadmap
-
-| Milestone | Status |
-|---|---|
-| Monorepo foundation — contracts, control plane, worker agent, dashboard | **Done** |
-| Docker Compose local deployment | **Done** |
-| Model catalog and per-agent LLM configuration UI | **Done** |
-| GPU/NPU detection (NVML, ROCm) | Planned |
-| Persistent storage backend (PostgreSQL / Redis) | Planned |
-| Real job execution — script dispatch and status tracking | Planned |
-| Live telemetry streaming (OpenTelemetry) | Planned |
-| Multi-node cluster topology view | Planned |
-| AI-driven autoscaling and load rebalancing | Planned |
-
----
-
 ## License
 
 [MIT](LICENSE) — Nielsen
