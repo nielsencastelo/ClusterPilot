@@ -1,3 +1,5 @@
+import type { CSSProperties } from "react";
+
 import { AgentConfigManager } from "@/components/agent-config-manager";
 import { fetchAgentConfigs, fetchModelCatalog } from "@/lib/api";
 
@@ -6,9 +8,16 @@ export default async function AgentsPage() {
 
   return (
     <main style={{ maxWidth: 1180, margin: "0 auto", display: "grid", gap: 24 }}>
-      <section style={heroStyle}>
+      <section className="grid-bg fade-up" style={heroStyle}>
+        {/* Glow */}
+        <div style={{
+          position: "absolute", top: -50, right: -50,
+          width: 200, height: 200, borderRadius: "50%",
+          background: "radial-gradient(circle, rgba(167,139,250,0.2) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
         <div style={eyebrowStyle}>Agent Policies</div>
-        <h1 style={{ margin: 0, fontSize: 46 }}>Assign a model and a custom prompt to each agent.</h1>
+        <h1 style={heroHeadingStyle}>Assign a model and a custom prompt to each agent.</h1>
         <p style={heroTextStyle}>
           This page controls the default policy for each agent, while jobs can later override the selected model and prompt when needed.
         </p>
@@ -18,13 +27,38 @@ export default async function AgentsPage() {
   );
 }
 
-const heroStyle = {
+const heroStyle: CSSProperties = {
   display: "grid",
-  gap: 16,
-  padding: 28,
-  borderRadius: 32,
-  background: "linear-gradient(135deg, rgba(24,33,47,0.96), rgba(38,57,76,0.88))",
-  color: "#fff8ed",
+  gap: 14,
+  padding: "34px 36px 30px",
+  borderRadius: 28,
+  background: "linear-gradient(135deg, rgba(18,25,50,0.98) 0%, rgba(30,38,70,0.95) 50%, rgba(14,20,42,0.98) 100%)",
+  border: "1px solid rgba(99,102,241,0.2)",
+  boxShadow: "0 0 0 1px rgba(99,102,241,0.08), 0 8px 24px rgba(0,0,0,0.5), 0 32px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
+  position: "relative",
+  overflow: "hidden",
 };
-const eyebrowStyle = { fontSize: 13, letterSpacing: "0.18em", textTransform: "uppercase" as const, opacity: 0.72 };
-const heroTextStyle = { margin: 0, fontSize: 18, lineHeight: 1.6, color: "rgba(255,248,237,0.82)" };
+
+const eyebrowStyle: CSSProperties = {
+  fontSize: 11,
+  letterSpacing: "0.2em",
+  textTransform: "uppercase",
+  color: "var(--accent2)",
+  fontWeight: 600,
+};
+
+const heroHeadingStyle: CSSProperties = {
+  margin: 0,
+  fontSize: 42,
+  fontWeight: 800,
+  color: "#fff",
+  letterSpacing: "-0.02em",
+  lineHeight: 1.1,
+};
+
+const heroTextStyle: CSSProperties = {
+  margin: 0,
+  fontSize: 15,
+  lineHeight: 1.65,
+  color: "rgba(226,232,240,0.6)",
+};

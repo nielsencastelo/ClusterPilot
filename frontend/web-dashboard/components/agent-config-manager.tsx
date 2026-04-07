@@ -5,6 +5,17 @@ import { useMemo, useState, useTransition } from "react";
 import { saveAgentConfig } from "@/lib/api";
 import type { AgentModelConfig, ModelCatalogItem } from "@/lib/types";
 
+const agentAccents: Record<string, string> = {
+  inventory: "#6366f1",
+  heartbeat: "#10b981",
+  execution: "#f59e0b",
+  telemetry: "#3b82f6",
+  artifact: "#8b5cf6",
+  planner: "#a78bfa",
+  rebalance: "#ef4444",
+  policy: "#06b6d4",
+};
+
 export function AgentConfigManager({
   initialConfigs,
   modelCatalog,
@@ -14,10 +25,13 @@ export function AgentConfigManager({
 }) {
   const [configs, setConfigs] = useState(initialConfigs);
   const [isPending, startTransition] = useTransition();
+
   const catalogMap = useMemo(() => {
     const map = new Map<string, ModelCatalogItem[]>();
     configs.forEach((config) => {
-      const filtered = modelCatalog.filter((item) => item.recommended_for.includes(config.agent_name) || item.available);
+      const filtered = modelCatalog.filter(
+        (item) => item.recommended_for.includes(config.agent_name) || item.available,
+      );
       map.set(config.agent_name, filtered);
     });
     return map;
@@ -27,6 +41,8 @@ export function AgentConfigManager({
     <div style={{ display: "grid", gap: 16 }}>
       {configs.map((config) => {
         const availableModels = catalogMap.get(config.agent_name) ?? [];
+        const accent = agentAccents[config.agent_name] ?? "var(--accent)";
+
         return (
           <form
             key={config.agent_name}
@@ -34,24 +50,50 @@ export function AgentConfigManager({
               event.preventDefault();
               startTransition(async () => {
                 const saved = await saveAgentConfig(config);
-                setConfigs((current) => current.map((item) => (item.agent_name === saved.agent_name ? saved : item)));
+                setConfigs((current) =>
+                  current.map((item) => (item.agent_name === saved.agent_name ? saved : item)),
+                );
               });
             }}
-            style={panelStyle}
+            className="card-3d"
+            style={{ ...panelStyle, position: "relative", overflow: "hidden" }}
           >
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "center" }}>
-              <div>
-                <h2 style={headingStyle}>{config.agent_name}</h2>
-                <p style={subtleStyle}>Choose the default model and refine the prompt for this agent.</p>
+            {/* Left accent bar */}
+            <div style={{
+              position: "absolute",
+              left: 0,
+              top: 16,
+              bottom: 16,
+              width: 3,
+              borderRadius: "0 3px 3px 0",
+              background: `linear-gradient(180deg, ${accent}, transparent)`,
+            }} />
+
+            <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <div style={{
+                  width: 8,
+                  height: 8,
+                  borderRadius: "50%",
+                  background: accent,
+                  boxShadow: `0 0 8px ${accent}`,
+                  flexShrink: 0,
+                }} />
+                <div>
+                  <h2 style={{ ...headingStyle, color: "#e2e8f0" }}>{config.agent_name}</h2>
+                  <p style={subtleStyle}>Choose the default model and refine the prompt for this agent.</p>
+                </div>
               </div>
-              <label style={toggleStyle}>
+              <label className="toggle-label">
                 <input
                   type="checkbox"
                   checked={config.enabled}
                   onChange={(event) =>
                     setConfigs((current) =>
                       current.map((item) =>
-                        item.agent_name === config.agent_name ? { ...item, enabled: event.target.checked } : item,
+                        item.agent_name === config.agent_name
+                          ? { ...item, enabled: event.target.checked }
+                          : item,
                       ),
                     )
                   }
@@ -62,12 +104,14 @@ export function AgentConfigManager({
 
             <div style={gridStyle}>
               <select
-                style={inputStyle}
+                className="input-dark"
                 value={`${config.provider}::${config.model}`}
                 onChange={(event) => {
                   const [provider, model] = event.target.value.split("::");
                   setConfigs((current) =>
-                    current.map((item) => (item.agent_name === config.agent_name ? { ...item, provider, model } : item)),
+                    current.map((item) =>
+                      item.agent_name === config.agent_name ? { ...item, provider, model } : item,
+                    ),
                   );
                 }}
               >
@@ -78,7 +122,7 @@ export function AgentConfigManager({
                 ))}
               </select>
               <input
-                style={inputStyle}
+                className="input-dark"
                 type="number"
                 min={0}
                 max={2}
@@ -87,7 +131,9 @@ export function AgentConfigManager({
                 onChange={(event) =>
                   setConfigs((current) =>
                     current.map((item) =>
-                      item.agent_name === config.agent_name ? { ...item, temperature: Number(event.target.value) } : item,
+                      item.agent_name === config.agent_name
+                        ? { ...item, temperature: Number(event.target.value) }
+                        : item,
                     ),
                   )
                 }
@@ -95,33 +141,39 @@ export function AgentConfigManager({
             </div>
 
             <textarea
-              style={textareaStyle}
+              className="input-dark"
+              style={textareaExtra}
               rows={4}
               value={config.system_prompt ?? ""}
               onChange={(event) =>
                 setConfigs((current) =>
                   current.map((item) =>
-                    item.agent_name === config.agent_name ? { ...item, system_prompt: event.target.value } : item,
+                    item.agent_name === config.agent_name
+                      ? { ...item, system_prompt: event.target.value }
+                      : item,
                   ),
                 )
               }
               placeholder="System prompt"
             />
             <textarea
-              style={textareaStyle}
+              className="input-dark"
+              style={{ ...textareaExtra, marginTop: 10 }}
               rows={5}
               value={config.custom_prompt ?? ""}
               onChange={(event) =>
                 setConfigs((current) =>
                   current.map((item) =>
-                    item.agent_name === config.agent_name ? { ...item, custom_prompt: event.target.value } : item,
+                    item.agent_name === config.agent_name
+                      ? { ...item, custom_prompt: event.target.value }
+                      : item,
                   ),
                 )
               }
               placeholder="Custom prompt refinements"
             />
 
-            <button style={buttonStyle} type="submit" disabled={isPending}>
+            <button className="btn-primary" style={{ marginTop: 16 }} type="submit" disabled={isPending}>
               {isPending ? "Saving..." : "Save Agent Policy"}
             </button>
           </form>
@@ -132,15 +184,17 @@ export function AgentConfigManager({
 }
 
 const panelStyle = {
-  background: "rgba(255, 252, 246, 0.92)",
-  border: "1px solid var(--line)",
-  borderRadius: 28,
-  padding: 24,
+  background: "rgba(15, 22, 40, 0.7)",
+  border: "1px solid rgba(120, 160, 255, 0.1)",
+  borderRadius: 20,
+  padding: "22px 24px 22px 28px",
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  boxShadow:
+    "0 0 0 1px rgba(120,160,255,0.05), 0 4px 8px rgba(0,0,0,0.35), 0 16px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03)",
 };
-const headingStyle = { margin: 0, fontSize: 26, textTransform: "capitalize" as const };
-const subtleStyle = { color: "var(--muted)", margin: "6px 0 0" };
-const gridStyle = { display: "grid", gap: 12, gridTemplateColumns: "2fr 1fr", margin: "18px 0" };
-const inputStyle = { padding: "12px 14px", borderRadius: 14, border: "1px solid var(--line)", background: "#fff" };
-const textareaStyle = { width: "100%", marginTop: 12, padding: "14px 16px", borderRadius: 18, border: "1px solid var(--line)", background: "#fff", resize: "vertical" as const };
-const buttonStyle = { marginTop: 14, padding: "12px 18px", borderRadius: 14, border: "none", background: "var(--accent)", color: "#fff8ed", fontWeight: 700, cursor: "pointer", width: "fit-content" };
-const toggleStyle = { display: "inline-flex", gap: 8, alignItems: "center", color: "var(--muted)" };
+
+const headingStyle = { margin: 0, fontSize: 22, fontWeight: 700, textTransform: "capitalize" as const };
+const subtleStyle = { color: "var(--muted)", margin: "3px 0 0", fontSize: 13 };
+const gridStyle = { display: "grid", gap: 12, gridTemplateColumns: "2fr 1fr", margin: "16px 0 12px" };
+const textareaExtra = { resize: "vertical" as const, marginTop: 0, minHeight: 80 };

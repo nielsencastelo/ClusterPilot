@@ -18,27 +18,57 @@ export function EmbeddingConfigManager({ initialConfig }: { initialConfig: Embed
           setConfig(saved);
         });
       }}
+      className="card-3d"
       style={panelStyle}
     >
-      <h2 style={headingStyle}>Embedding Generator</h2>
-      <p style={subtleStyle}>Configure the runtime used to create embeddings for each agent knowledge base. Ollama local works well here.</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+        <div>
+          <h2 style={headingStyle}>Embedding Generator</h2>
+          <p style={subtleStyle}>
+            Configure the runtime used to create embeddings for each agent knowledge base. Ollama local works well here.
+          </p>
+        </div>
+        <label className="toggle-label">
+          <input
+            type="checkbox"
+            checked={config.enabled}
+            onChange={(event) => setConfig({ ...config, enabled: event.target.checked })}
+          />
+          Enabled
+        </label>
+      </div>
+
       <div style={gridStyle}>
-        <input style={inputStyle} value={config.provider} onChange={(event) => setConfig({ ...config, provider: event.target.value })} placeholder="Provider" />
-        <input style={inputStyle} value={config.model} onChange={(event) => setConfig({ ...config, model: event.target.value })} placeholder="Embedding model" />
-        <input style={inputStyle} value={config.base_url} onChange={(event) => setConfig({ ...config, base_url: event.target.value })} placeholder="Base URL" />
         <input
-          style={inputStyle}
+          className="input-dark"
+          value={config.provider}
+          onChange={(event) => setConfig({ ...config, provider: event.target.value })}
+          placeholder="Provider"
+        />
+        <input
+          className="input-dark"
+          value={config.model}
+          onChange={(event) => setConfig({ ...config, model: event.target.value })}
+          placeholder="Embedding model"
+        />
+        <input
+          className="input-dark"
+          value={config.base_url}
+          onChange={(event) => setConfig({ ...config, base_url: event.target.value })}
+          placeholder="Base URL"
+        />
+        <input
+          className="input-dark"
           type="number"
           value={config.dimensions ?? ""}
-          onChange={(event) => setConfig({ ...config, dimensions: event.target.value ? Number(event.target.value) : null })}
+          onChange={(event) =>
+            setConfig({ ...config, dimensions: event.target.value ? Number(event.target.value) : null })
+          }
           placeholder="Dimensions"
         />
       </div>
-      <label style={toggleStyle}>
-        <input type="checkbox" checked={config.enabled} onChange={(event) => setConfig({ ...config, enabled: event.target.checked })} />
-        Enabled
-      </label>
-      <button style={buttonStyle} type="submit" disabled={isPending}>
+
+      <button className="btn-primary" type="submit" disabled={isPending}>
         {isPending ? "Saving..." : "Save Embedding Runtime"}
       </button>
     </form>
@@ -46,14 +76,16 @@ export function EmbeddingConfigManager({ initialConfig }: { initialConfig: Embed
 }
 
 const panelStyle = {
-  background: "rgba(255, 252, 246, 0.92)",
-  border: "1px solid var(--line)",
-  borderRadius: 28,
+  background: "rgba(15, 22, 40, 0.7)",
+  border: "1px solid rgba(120, 160, 255, 0.1)",
+  borderRadius: 20,
   padding: 24,
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  boxShadow:
+    "0 0 0 1px rgba(120,160,255,0.05), 0 4px 8px rgba(0,0,0,0.35), 0 16px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.03)",
 };
-const headingStyle = { margin: 0, fontSize: 26 };
-const subtleStyle = { color: "var(--muted)", margin: "6px 0 0" };
-const gridStyle = { display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", margin: "18px 0" };
-const inputStyle = { padding: "12px 14px", borderRadius: 14, border: "1px solid var(--line)", background: "#fff" };
-const buttonStyle = { marginTop: 14, padding: "12px 18px", borderRadius: 14, border: "none", background: "var(--accent)", color: "#fff8ed", fontWeight: 700, cursor: "pointer", width: "fit-content" };
-const toggleStyle = { display: "inline-flex", gap: 8, alignItems: "center", color: "var(--muted)" };
+
+const headingStyle = { margin: 0, fontSize: 20, fontWeight: 700, color: "var(--text)" };
+const subtleStyle = { color: "var(--muted)", margin: "4px 0 0", fontSize: 13 };
+const gridStyle = { display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", margin: "18px 0" };
