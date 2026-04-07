@@ -4,7 +4,6 @@ WORKDIR /app
 
 COPY package.json /app/package.json
 COPY frontend/web-dashboard /app/frontend/web-dashboard
-COPY shared/core-contracts/web /app/shared/core-contracts/web
 
 RUN npm install
 

@@ -3,11 +3,11 @@ FROM python:3.11-slim
 WORKDIR /app
 
 COPY backend/control-plane /app/backend/control-plane
-COPY shared/core-contracts/python /app/shared/core-contracts/python
+COPY backend/core /app/backend/core
 
 RUN pip install --no-cache-dir fastapi uvicorn pydantic
 
-ENV PYTHONPATH=/app/shared/core-contracts/python:/app/backend/control-plane
+ENV PYTHONPATH=/app/backend/core:/app/backend/control-plane
 
 EXPOSE 8000
 

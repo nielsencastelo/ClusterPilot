@@ -1,6 +1,7 @@
 from fastapi import APIRouter, status
 
 from clusterpilot_core.models import (
+    AgentName,
     AgentConfigListResponse,
     AgentModelConfig,
     ModelCatalogItem,
@@ -33,5 +34,5 @@ async def upsert_agent_config(
     agent_name: str, payload: AgentModelConfig, service: ModelServiceDep
 ) -> AgentModelConfig:
     if payload.agent_name.value != agent_name:
-        payload = payload.model_copy(update={"agent_name": agent_name})
+        payload = payload.model_copy(update={"agent_name": AgentName(agent_name)})
     return service.upsert_agent_config(payload)
