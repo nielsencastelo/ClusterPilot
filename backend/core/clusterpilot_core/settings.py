@@ -8,6 +8,18 @@ from dataclasses import dataclass
 class ControlPlaneSettings:
     app_name: str = "ClusterPilot Control Plane"
     api_version: str = "0.2.0"
+    database_url: str = os.getenv(
+        "CLUSTERPILOT_DATABASE_URL",
+        "postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot",
+    )
+    celery_broker_url: str = os.getenv(
+        "CLUSTERPILOT_CELERY_BROKER_URL",
+        "redis://redis:6379/0",
+    )
+    celery_result_backend: str = os.getenv(
+        "CLUSTERPILOT_CELERY_RESULT_BACKEND",
+        "redis://redis:6379/1",
+    )
     allowed_origins: tuple[str, ...] = (
         "http://localhost:3000",
         "http://127.0.0.1:3000",

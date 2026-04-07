@@ -7,19 +7,19 @@ from clusterpilot_core.models import (
     NodeRegistration,
 )
 
-from ...infrastructure.repositories.memory import InMemoryNodeRepository
+from ...infrastructure.repositories.sqlalchemy import SqlAlchemyNodeRepository
 
 
 class NodeService:
-    def __init__(self, repository: InMemoryNodeRepository) -> None:
+    def __init__(self, repository: SqlAlchemyNodeRepository) -> None:
         self.repository = repository
 
-    def register_node(self, payload: NodeRegistration) -> NodeRecord:
-        return self.repository.register(payload)
+    async def register_node(self, payload: NodeRegistration) -> NodeRecord:
+        return await self.repository.register(payload)
 
-    def record_heartbeat(self, node_id: str, payload: NodeHeartbeatPayload) -> NodeRecord | None:
-        return self.repository.record_heartbeat(node_id, payload)
+    async def record_heartbeat(self, node_id: str, payload: NodeHeartbeatPayload) -> NodeRecord | None:
+        return await self.repository.record_heartbeat(node_id, payload)
 
-    def list_nodes(self) -> NodeListResponse:
-        items = self.repository.list()
+    async def list_nodes(self) -> NodeListResponse:
+        items = await self.repository.list()
         return NodeListResponse(items=items, total=len(items))
