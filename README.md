@@ -1,245 +1,261 @@
-# ClusterPilot
+<div align="center">
 
 ![ClusterPilot Logo](docs/assets/brand/clusterpilot-logo.svg)
 
-ClusterPilot is a distributed orchestration framework for AI training across heterogeneous CPU, GPU and NPU clusters. The repository is now organized so the backend owns the domain, orchestration logic and agent runtime, while the frontend focuses on configuration, management and operational visibility.
+**AI-native distributed orchestration for heterogeneous training clusters.**
 
-## Current Architecture
+[![License: MIT](https://img.shields.io/badge/License-MIT-D95D39.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/Python-3.11%2B-207868.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-18212F.svg)](https://fastapi.tiangolo.com/)
+[![Next.js 15](https://img.shields.io/badge/Next.js-15-18212F.svg)](https://nextjs.org/)
+[![Docker Compose](https://img.shields.io/badge/Docker-Compose-546174.svg)](docker-compose.yml)
 
-- `backend/core`: shared Python domain for the whole backend
-- `backend/control-plane`: FastAPI control plane application
-- `backend/worker-agent`: worker runtime with internal agent modules
-- `frontend/web-dashboard`: Next.js dashboard for cluster management
-- `docs/assets`: logo and architecture diagrams
+</div>
 
-The backend now also includes:
+---
 
-- PostgreSQL for persistent state
-- Redis for queue and broker support
-- Celery for background job processing
+ClusterPilot is a distributed orchestration framework built specifically for AI training across heterogeneous CPU, GPU, and NPU clusters. Unlike general-purpose schedulers, ClusterPilot is **AI-native by design**: each orchestration function — placement, rebalancing, policy enforcement — is driven by a configurable LLM agent, not a fixed algorithm. The entire stack runs locally with a single `docker compose up`.
 
-## Repository Structure
+## Why ClusterPilot?
 
-```text
-backend/
-  core/
-  control-plane/
-  worker-agent/
-frontend/
-  web-dashboard/
-docs/
-  assets/
-  superpowers/specs/
-docker-compose.yml
-```
+![Framework Comparison](docs/assets/diagrams/framework-comparison.svg)
 
-## Responsibility Split
+Existing tools are powerful but generic. **Ray** is a Python distributed computing library that requires manual task and actor management. **Kubernetes** is a container orchestrator with steep YAML overhead and no ML-specific primitives. **SLURM** is built for HPC batch jobs and lacks modern AI workflow APIs. None of them ship with AI-powered scheduling decisions, a live web dashboard, or typed cross-language contracts out of the box.
 
-- `backend/core` contains domain models, enums and backend settings
-- `backend/control-plane` exposes APIs for nodes, jobs, models and agent policies
-- `backend/worker-agent` contains inventory, heartbeat, execution, telemetry and artifact modules
-- `frontend/web-dashboard` is the control surface for visualization and configuration
+ClusterPilot fills that gap:
+
+- **AI-powered control plane** — Planner, Rebalance, and Policy agents each run an LLM of your choice, making scheduling decisions from real hardware signals rather than fixed rules.
+- **Model catalog** — register cloud and local models, assign them to specific agents, override prompts and temperature per agent.
+- **Hardware-first inventory** — every worker node reports CPU, RAM, GPU/NPU devices, CUDA/ROCm capability, and available runtimes before any job is placed.
+- **Unified typed contracts** — `clusterpilot-core` ships mirrored Pydantic (Python) and TypeScript models so the API surface is consistent end-to-end.
+- **Zero-config local deployment** — three services, one compose file, works offline.
+
+---
 
 ## Architecture Overview
 
-![Cluster Overview](docs/assets/diagrams/clusterpilot-overview.svg)
+![ClusterPilot Architecture](docs/assets/diagrams/clusterpilot-overview.svg)
 
-The current foundation works like this:
+ClusterPilot is organized into three integrated layers:
 
-1. the worker agent collects machine capabilities
-2. the worker registers itself with the control plane
-3. the control plane stores node state and queued jobs
-4. the frontend reads the API and exposes cluster management screens
-5. model catalog and agent prompt policy are configured from the frontend
+| Layer | Component | Responsibility |
+|---|---|---|
+| **Control Plane** | `backend/control-plane` | FastAPI REST API, node registry, job queue, AI intelligence agents |
+| **Worker Agent** | `backend/worker-agent` | Per-node process: inventory, heartbeat, execution, telemetry, artifact |
+| **Web Dashboard** | `frontend/web-dashboard` | Next.js app for cluster monitoring, job management, agent/model config |
 
-## Backend Design
+Shared contracts live in `backend/core/clusterpilot_core` and are mirrored in `frontend/web-dashboard/lib/types.ts`.
 
-The backend has been refactored into a more professional structure:
-
-- `backend/core/clusterpilot_core/models.py`: domain contracts for nodes, jobs, models and agent configs
-- `backend/core/clusterpilot_core/settings.py`: shared backend settings
-- `backend/control-plane/app/api`: FastAPI routers
-- `backend/control-plane/app/application/services`: use-case services
-- `backend/control-plane/app/infrastructure/repositories`: repository implementations
-- `backend/control-plane/app/infrastructure/database`: SQLAlchemy models, sessions and seed
-- `backend/control-plane/app/worker`: Celery app and async background tasks
-- `backend/worker-agent/clusterpilot_agent`: runtime-side specialized agent modules
-
-This keeps business concepts in the backend instead of scattering them across frontend and shared folders.
+---
 
 ## Agent Model
 
-![Agent Roles](docs/assets/diagrams/agent-roles.svg)
+![Agent Pipeline](docs/assets/diagrams/agent-pipeline.svg)
 
-The worker agent is now split into explicit internal modules:
+ClusterPilot defines **8 named agents** across two sides of the system:
 
-- `inventory_agent.py`: hardware and runtime discovery
-- `heartbeat_agent.py`: periodic liveness reporting
-- `execution_agent.py`: workspace preparation for future workload execution
-- `telemetry_agent.py`: heartbeat payload generation for runtime status
-- `artifact_agent.py`: artifact directory preparation
+### Worker-side agents (run on each node)
 
-The control plane is prepared to evolve planner, policy and rebalance logic on top of those runtime signals.
+| Agent | Role | Output contract |
+|---|---|---|
+| `inventory` | Scans CPU, RAM, disk, GPU/NPU, runtimes | `NodeCapabilities` |
+| `heartbeat` | Publishes liveness: CPU %, mem %, GPU %, active jobs | `NodeHeartbeat` |
+| `execution` | Receives dispatched jobs, provisions env, runs scripts | `JobRecord` status updates |
+| `telemetry` | Streams structured logs, GPU utilization, memory pressure | Metrics · Logs |
+| `artifact` | Tracks and syncs model checkpoints and weights | Artifact manifests |
+
+### Control-plane AI agents
+
+| Agent | Role |
+|---|---|
+| `planner` | Selects target nodes for queued jobs based on hardware signals |
+| `rebalance` | Redistributes load across the cluster when nodes degrade or recover |
+| `policy` | Enforces runtime rules: priority, preemption, SLA constraints |
+
+Each agent has an independently configurable LLM backend: provider, model ID, system prompt, custom prompt, temperature, and a manual override flag. Configuration is live — changes take effect without restarting any service.
+
+---
 
 ## Control Plane API
 
 ![API Responsibilities](docs/assets/diagrams/api-responsibilities.svg)
 
-Current API surface:
+### Node management
 
-- `GET /health`
-- `GET /api/v1/nodes`
-- `POST /api/v1/nodes/register`
-- `POST /api/v1/nodes/{node_id}/heartbeat`
-- `GET /api/v1/jobs`
-- `POST /api/v1/jobs`
-- `GET /api/v1/models/catalog`
-- `POST /api/v1/models/catalog`
-- `GET /api/v1/agents/config`
-- `PUT /api/v1/agents/config/{agent_name}`
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/health` | Service readiness check |
+| `POST` | `/api/v1/nodes/register` | Register a new worker node with full capability inventory |
+| `GET` | `/api/v1/nodes` | List all registered nodes with current status |
+| `POST` | `/api/v1/nodes/{node_id}/heartbeat` | Update node liveness and runtime metrics |
 
-What the API does today:
+### Job queue
 
-- tracks nodes and heartbeats in PostgreSQL
-- stores queued jobs in PostgreSQL
-- stores a validated model catalog
-- stores default model policy per agent
-- supports per-job model overrides through `model_overrides`
-- accepts custom prompts and system prompts for each agent policy
-- dispatches background processing through Celery
+| Method | Route | Description |
+|---|---|---|
+| `POST` | `/api/v1/jobs` | Submit a new training job with hardware requirements |
+| `GET` | `/api/v1/jobs` | List all jobs and current status |
 
-## Frontend Dashboard
+### Model and agent configuration
+
+| Method | Route | Description |
+|---|---|---|
+| `GET` | `/api/v1/models/catalog` | List registered model catalog entries |
+| `POST` | `/api/v1/models/catalog` | Register or update a model in the catalog |
+| `GET` | `/api/v1/agents/config` | Get per-agent model and prompt configuration |
+| `PUT` | `/api/v1/agents/config/{agent_name}` | Update a specific agent's LLM configuration |
+
+---
+
+## Web Dashboard
 
 ![Frontend Responsibilities](docs/assets/diagrams/frontend-responsibilities.svg)
 
-The frontend now has three clear responsibilities:
+The Next.js dashboard connects to the control plane and provides:
 
-1. `Home`
-   Shows cluster summary, nodes and job queue.
-2. `Models`
-   Registers the models available in the system.
-3. `Agents`
-   Assigns which model each agent should use and lets operators refine custom prompts.
+**Main page (`/`)**
+- Cluster summary cards (total nodes, online, degraded, queued jobs)
+- Node inventory table with live status, capabilities, and heartbeat metrics
+- Job queue table with status, runtime, and requirements
 
-Important pages:
+**Agent configuration (`/agents`)**
+- Per-agent model selector from the registered catalog
+- Custom system prompt and temperature overrides
+- Enable/disable individual agents
 
-- [page.tsx](frontend/web-dashboard/app/page.tsx)
-- [models/page.tsx](frontend/web-dashboard/app/models/page.tsx)
-- [agents/page.tsx](frontend/web-dashboard/app/agents/page.tsx)
+**Model catalog (`/models`)**
+- Register cloud (OpenAI, Anthropic, etc.) and local models
+- Tag models and set recommended agents per model
 
-## Model Management
+---
 
-The frontend now exposes configuration for:
+## Quick Start
 
-- available local and cloud models in the system catalog
-- default model selection per agent
-- custom prompt refinements per agent
-- system prompt per agent
-- future support path for per-job override
-
-The backend validates agent configuration against the registered model catalog before saving.
-
-## Docker Compose
-
-The repository includes:
-
-- [docker-compose.yml](docker-compose.yml)
-- [Dockerfile](backend/control-plane/Dockerfile)
-- [Dockerfile](backend/worker-agent/Dockerfile)
-- [Dockerfile](frontend/web-dashboard/Dockerfile)
-
-To build and start the stack:
+### Docker Compose (recommended)
 
 ```bash
+git clone https://github.com/your-org/clusterpilot.git
+cd clusterpilot
 docker compose up --build
 ```
 
-Exposed locally:
+| Service | URL |
+|---|---|
+| Control Plane API | `http://localhost:8000` |
+| Web Dashboard | `http://localhost:3000` |
+| API docs (Swagger) | `http://localhost:8000/docs` |
 
-- control plane API: `http://localhost:8000`
-- dashboard: `http://localhost:3000`
-- PostgreSQL: `localhost:5432`
-- Redis: `localhost:6379`
+The compose stack wires all services automatically. The worker agent registers itself on startup and begins sending heartbeats every 10 seconds.
 
-Compose wiring:
+### Manual setup
 
-- worker agent talks to `http://control-plane:8000`
-- Next.js server-side requests also use `http://control-plane:8000`
-- browser-side frontend requests use `http://localhost:8000`
-- Celery consumes jobs through Redis and updates persisted job state in PostgreSQL
-
-## Environment Variables
-
-Worker agent:
-
-- `CLUSTERPILOT_CONTROL_PLANE_URL`
-- `CLUSTERPILOT_NODE_ID`
-- `CLUSTERPILOT_NODE_NAME`
-- `CLUSTERPILOT_HEARTBEAT_SECONDS`
-
-Frontend:
-
-- `CLUSTERPILOT_API_BASE_URL`
-- `NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL`
-
-Control plane:
-
-- `CLUSTERPILOT_DATABASE_URL`
-- `CLUSTERPILOT_CELERY_BROKER_URL`
-- `CLUSTERPILOT_CELERY_RESULT_BACKEND`
-
-## Why Postgres, Redis and Celery
-
-- `PostgreSQL` improves durability and lets nodes, jobs, model catalog and agent policies survive restarts.
-- `Redis` gives the system a fast broker/result layer for asynchronous orchestration work.
-- `Celery` moves job processing out of the request path so the API can stay responsive while background work evolves.
-
-This is a much better base than keeping orchestration state only in memory.
-
-## RAG For Agents
-
-Yes, RAG is a very good fit for ClusterPilot agents.
-
-Where RAG can help:
-
-- infrastructure runbooks and operational procedures
-- hardware compatibility notes
-- model deployment guides
-- previous incident reports
-- cluster topology documentation
-- historical job summaries and experiment context
-
-Good agent/RAG pairings:
-
-- `planner`: retrieve cluster policies, placement rules and previous execution outcomes
-- `execution`: retrieve job templates, runtime instructions and environment notes
-- `telemetry`: retrieve alert playbooks and troubleshooting guides
-- `policy`: retrieve compliance or scheduling policy context
-
-Recommended architecture for a future RAG layer:
-
-1. ingest docs, manifests, runbooks and experiment metadata into a vector index
-2. expose a backend retrieval service
-3. let specific agents call retrieval before planning or execution
-4. store the retrieved context and decision trace per job for auditability
-
-I have not implemented the RAG layer yet, but the new model-policy architecture is a good foundation for it.
-
-## Validation Notes
-
-Python syntax validation was run across the backend with:
+**Control plane:**
 
 ```bash
-python -m py_compile <all backend python files>
+cd backend/control-plane
+pip install -e ../../backend/core
+pip install -e .
+uvicorn app.main:app --reload --port 8000
 ```
 
-This verifies the refactored backend modules compile cleanly.
+**Worker agent:**
 
-## Next Steps
+```bash
+cd backend/worker-agent
+pip install -e ../../backend/core
+pip install -e .
+python -m clusterpilot_agent
+```
 
-The next milestone should focus on:
+**Web dashboard:**
 
-1. real workload execution in the execution agent
-2. artifact and log streaming back to the control plane
-3. first scheduler and policy heuristics using the configured model policies
-4. a retrieval layer for RAG-enabled planning and operational agents
+```bash
+cd frontend/web-dashboard
+npm install
+npm run dev   # → http://localhost:3000
+```
+
+---
+
+## Configuration Reference
+
+### Worker Agent
+
+| Variable | Default | Description |
+|---|---|---|
+| `CLUSTERPILOT_CONTROL_PLANE_URL` | `http://localhost:8000` | Control plane base URL |
+| `CLUSTERPILOT_NODE_ID` | hostname | Unique identifier for this node |
+| `CLUSTERPILOT_NODE_NAME` | hostname | Display name for this node |
+| `CLUSTERPILOT_HEARTBEAT_SECONDS` | `10` | Heartbeat interval in seconds |
+
+### Web Dashboard
+
+| Variable | Description |
+|---|---|
+| `CLUSTERPILOT_API_BASE_URL` | Server-side API URL (used for SSR) |
+| `NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL` | Client-side API URL (used in browser) |
+
+---
+
+## Repository Structure
+
+```text
+backend/
+  control-plane/          FastAPI control plane service
+    app/
+      api/routers/        nodes · jobs · model_management
+      application/        job_service · node_service · model_service
+      infrastructure/     in-memory repositories (Redis-ready)
+  worker-agent/           Python worker process
+    clusterpilot_agent/   inventory · heartbeat · execution · telemetry · artifact agents
+  core/                   clusterpilot_core — shared Pydantic models and settings
+
+frontend/
+  web-dashboard/          Next.js 15 dashboard
+    app/                  / (cluster view) · /agents · /models
+    components/           agent-config-manager · model-catalog-manager
+    lib/                  api.ts · types.ts (mirrored from core)
+
+docs/
+  assets/
+    brand/                clusterpilot-logo.svg
+    diagrams/             architecture · agent pipeline · API · comparison
+  superpowers/specs/      design documents
+```
+
+---
+
+## Core Data Contracts
+
+All API payloads are defined in `backend/core/clusterpilot_core/models.py` and mirrored to TypeScript in `frontend/web-dashboard/lib/types.ts`.
+
+**Key models:**
+
+- `NodeCapabilities` — CPU cores, RAM, disk, GPU/NPU count, OS, Python version, runtime versions, labels, metadata
+- `NodeHeartbeat` — CPU %, memory %, GPU %, active job count, optional status message
+- `NodeRecord` — full node state including capabilities, heartbeat snapshot, timestamps, and `NodeStatus` (online / degraded / offline)
+- `JobRecord` — job ID, runtime, entrypoint, arguments, `JobRequirements` (min CPU, min RAM, min GPU, network profile), status, timestamps
+- `AgentModelConfig` — per-agent LLM provider, model ID, prompts, temperature, enable flag
+- `ModelCatalogItem` — provider, model, label, source (local/cloud), availability, recommended agents
+
+---
+
+## Roadmap
+
+| Milestone | Status |
+|---|---|
+| Monorepo foundation — contracts, control plane, worker agent, dashboard | **Done** |
+| Docker Compose local deployment | **Done** |
+| Model catalog and per-agent LLM configuration UI | **Done** |
+| GPU/NPU detection (NVML, ROCm) | Planned |
+| Persistent storage backend (PostgreSQL / Redis) | Planned |
+| Real job execution — script dispatch and status tracking | Planned |
+| Live telemetry streaming (OpenTelemetry) | Planned |
+| Multi-node cluster topology view | Planned |
+| AI-driven autoscaling and load rebalancing | Planned |
+
+---
+
+## License
+
+[MIT](LICENSE) — Nielsen
