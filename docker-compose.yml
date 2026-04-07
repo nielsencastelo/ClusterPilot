@@ -18,6 +18,12 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U clusterpilot -d clusterpilot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
 
   redis:
     image: redis:7-alpine
@@ -31,8 +37,10 @@ services:
       dockerfile: backend/control-plane/Dockerfile
     container_name: clusterpilot-control-plane
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       CLUSTERPILOT_DATABASE_URL: postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot
       CLUSTERPILOT_CELERY_BROKER_URL: redis://redis:6379/0
@@ -55,8 +63,10 @@ services:
       dockerfile: backend/control-plane/Dockerfile
     container_name: clusterpilot-celery-worker
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     environment:
       CLUSTERPILOT_DATABASE_URL: postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot
       CLUSTERPILOT_CELERY_BROKER_URL: redis://redis:6379/0
