@@ -344,9 +344,3 @@ It is being built for the reality many teams already have: fragmented compute, m
 
 License to be defined.
 
----
-
-## Author
-
-**Nielsen Castelo**  
-GitHub: <https://github.com/nielsencastelo/ClusterPilot>
