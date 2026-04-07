@@ -41,12 +41,11 @@ On the control plane side, the first policy modules are:
 
 ```text
 backend/
+  core/
   control-plane/
   worker-agent/
 frontend/
   web-dashboard/
-shared/
-  core-contracts/
 docs/
 ```
 

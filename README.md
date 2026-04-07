@@ -2,76 +2,82 @@
 
 ![ClusterPilot Logo](docs/assets/brand/clusterpilot-logo.svg)
 
-ClusterPilot is a distributed orchestration framework for AI training across heterogeneous CPU, GPU and NPU clusters. The repository is now organized with a clear split between backend, frontend and shared contracts, and already contains the first working foundation slice of the platform.
+ClusterPilot is a distributed orchestration framework for AI training across heterogeneous CPU, GPU and NPU clusters. The repository is now organized so the backend owns the domain, orchestration logic and agent runtime, while the frontend focuses on configuration, management and operational visibility.
 
-## What Is Already Built
+## Current Architecture
 
-- `backend/control-plane`: FastAPI control plane MVP
-- `backend/worker-agent`: Python worker agent MVP
-- `frontend/web-dashboard`: Next.js dashboard MVP
-- `shared/core-contracts`: mirrored Python and TypeScript contracts
-- `docs/assets`: project logo and architecture diagrams
-
-The current MVP already supports:
-
-- node registration
-- heartbeat updates
-- capability inventory snapshots
-- simple in-memory job queue creation
-- dashboard visualization of nodes and jobs
+- `backend/core`: shared Python domain for the whole backend
+- `backend/control-plane`: FastAPI control plane application
+- `backend/worker-agent`: worker runtime with internal agent modules
+- `frontend/web-dashboard`: Next.js dashboard for cluster management
+- `docs/assets`: logo and architecture diagrams
 
 ## Repository Structure
 
 ```text
 backend/
+  core/
   control-plane/
   worker-agent/
 frontend/
   web-dashboard/
-shared/
-  core-contracts/
 docs/
   assets/
   superpowers/specs/
+docker-compose.yml
 ```
 
-### Responsibility Split
+## Responsibility Split
 
-- `backend/`: Python services and runtime-side components
-- `frontend/`: user-facing web applications
-- `shared/`: contracts reused by backend and frontend
-- `docs/`: planning, brand and architecture documentation
+- `backend/core` contains domain models, enums and backend settings
+- `backend/control-plane` exposes APIs for nodes, jobs, models and agent policies
+- `backend/worker-agent` contains inventory, heartbeat, execution, telemetry and artifact modules
+- `frontend/web-dashboard` is the control surface for visualization and configuration
 
 ## Architecture Overview
 
 ![Cluster Overview](docs/assets/diagrams/clusterpilot-overview.svg)
 
-ClusterPilot currently connects three main pieces:
+The current foundation works like this:
 
-- the `control-plane` API, which receives node registration, heartbeats and jobs
-- the `worker-agent`, which reports machine inventory and liveness
-- the `web-dashboard`, which reads cluster and queue state from the API
+1. the worker agent collects machine capabilities
+2. the worker registers itself with the control plane
+3. the control plane stores node state and queued jobs
+4. the frontend reads the API and exposes cluster management screens
+5. model catalog and agent prompt policy are configured from the frontend
 
-The `shared/core-contracts` package keeps backend and frontend aligned on the same entities.
+## Backend Design
+
+The backend has been refactored into a more professional structure:
+
+- `backend/core/clusterpilot_core/models.py`: domain contracts for nodes, jobs, models and agent configs
+- `backend/core/clusterpilot_core/settings.py`: shared backend settings
+- `backend/control-plane/app/api`: FastAPI routers
+- `backend/control-plane/app/application/services`: use-case services
+- `backend/control-plane/app/infrastructure/repositories`: repository implementations
+- `backend/worker-agent/clusterpilot_agent`: runtime-side specialized agent modules
+
+This keeps business concepts in the backend instead of scattering them across frontend and shared folders.
 
 ## Agent Model
 
 ![Agent Roles](docs/assets/diagrams/agent-roles.svg)
 
-The worker side is designed as one runtime with specialized internal roles:
+The worker agent is now split into explicit internal modules:
 
-- `inventory`: discovers CPU, memory, disk, GPU and runtimes
-- `heartbeat`: keeps the control plane aware of online status
-- `execution`: prepares the path for future workload execution
-- `telemetry`: prepares the path for logs and metrics streaming
+- `inventory_agent.py`: hardware and runtime discovery
+- `heartbeat_agent.py`: periodic liveness reporting
+- `execution_agent.py`: workspace preparation for future workload execution
+- `telemetry_agent.py`: heartbeat payload generation for runtime status
+- `artifact_agent.py`: artifact directory preparation
 
-On the control-plane side, planner and policy modules will consume these signals to decide eligibility and future placement behavior.
+The control plane is prepared to evolve planner, policy and rebalance logic on top of those runtime signals.
 
 ## Control Plane API
 
 ![API Responsibilities](docs/assets/diagrams/api-responsibilities.svg)
 
-FastAPI routes currently available:
+Current API surface:
 
 - `GET /health`
 - `GET /api/v1/nodes`
@@ -79,62 +85,106 @@ FastAPI routes currently available:
 - `POST /api/v1/nodes/{node_id}/heartbeat`
 - `GET /api/v1/jobs`
 - `POST /api/v1/jobs`
+- `GET /api/v1/models/catalog`
+- `POST /api/v1/models/catalog`
+- `GET /api/v1/agents/config`
+- `PUT /api/v1/agents/config/{agent_name}`
 
-What the API is doing today:
+What the API does today:
 
-- stores registered nodes in memory
-- updates online state via heartbeat
-- exposes node inventory to the dashboard
+- tracks nodes and heartbeats
 - stores queued jobs in memory
-- exposes the first control-plane surface for cluster operations
+- stores a validated model catalog
+- stores default model policy per agent
+- supports per-job model overrides through `model_overrides`
+- accepts custom prompts and system prompts for each agent policy
 
 ## Frontend Dashboard
 
 ![Frontend Responsibilities](docs/assets/diagrams/frontend-responsibilities.svg)
 
-The dashboard consumes the control plane API and renders:
+The frontend now has three clear responsibilities:
 
-- cluster summary cards
-- node inventory table
-- job queue table
-- stable empty states when the API is offline or still empty
+1. `Home`
+   Shows cluster summary, nodes and job queue.
+2. `Models`
+   Registers the models available in the system.
+3. `Agents`
+   Assigns which model each agent should use and lets operators refine custom prompts.
 
-Set `CLUSTERPILOT_API_BASE_URL` for the web app when the API is not at `http://localhost:8000`.
+Important pages:
+
+- [page.tsx](frontend/web-dashboard/app/page.tsx)
+- [models/page.tsx](frontend/web-dashboard/app/models/page.tsx)
+- [agents/page.tsx](frontend/web-dashboard/app/agents/page.tsx)
+
+## Model Management
+
+The frontend now exposes configuration for:
+
+- available local and cloud models in the system catalog
+- default model selection per agent
+- custom prompt refinements per agent
+- system prompt per agent
+- future support path for per-job override
+
+The backend validates agent configuration against the registered model catalog before saving.
 
 ## Docker Compose
 
-The repository now includes:
+The repository includes:
 
 - [docker-compose.yml](docker-compose.yml)
-- [Dockerfile](backend/control-plane/Dockerfile) for the control plane
-- [Dockerfile](backend/worker-agent/Dockerfile) for the worker agent
-- [Dockerfile](frontend/web-dashboard/Dockerfile) for the web dashboard
+- [Dockerfile](backend/control-plane/Dockerfile)
+- [Dockerfile](backend/worker-agent/Dockerfile)
+- [Dockerfile](frontend/web-dashboard/Dockerfile)
 
-To build and start everything:
+To build and start the stack:
 
 ```bash
 docker compose up --build
 ```
 
-Services exposed locally:
+Exposed locally:
 
-- Control plane API: `http://localhost:8000`
-- Frontend dashboard: `http://localhost:3000`
+- control plane API: `http://localhost:8000`
+- dashboard: `http://localhost:3000`
 
-The compose stack wires the worker agent to the control plane automatically using:
+Compose wiring:
 
-- `CLUSTERPILOT_CONTROL_PLANE_URL=http://control-plane:8000`
-- `CLUSTERPILOT_API_BASE_URL=http://control-plane:8000`
+- worker agent talks to `http://control-plane:8000`
+- Next.js server-side requests also use `http://control-plane:8000`
+- browser-side frontend requests use `http://localhost:8000`
 
-## Local Runtime Notes
+## Environment Variables
 
-The worker agent currently uses these environment variables:
+Worker agent:
 
 - `CLUSTERPILOT_CONTROL_PLANE_URL`
 - `CLUSTERPILOT_NODE_ID`
 - `CLUSTERPILOT_NODE_NAME`
 - `CLUSTERPILOT_HEARTBEAT_SECONDS`
 
-The frontend uses:
+Frontend:
 
 - `CLUSTERPILOT_API_BASE_URL`
+- `NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL`
+
+## Validation Notes
+
+Python syntax validation was run across the backend with:
+
+```bash
+python -m py_compile <all backend python files>
+```
+
+This verifies the refactored backend modules compile cleanly.
+
+## Next Steps
+
+The next milestone should focus on:
+
+1. persistent storage instead of in-memory repositories
+2. real workload execution in the execution agent
+3. artifact and log streaming back to the control plane
+4. first scheduler and policy heuristics using the configured model policies
