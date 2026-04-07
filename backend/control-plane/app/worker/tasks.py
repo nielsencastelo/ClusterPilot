@@ -43,31 +43,35 @@ async def _index_knowledge_document(document_id: str) -> None:
         if document is None:
             return
 
-        await knowledge_repository.mark_document_status(document_id, KnowledgeDocumentStatus.INDEXING)
+        try:
+            await knowledge_repository.mark_document_status(document_id, KnowledgeDocumentStatus.INDEXING)
 
-        text = extract_text(document.source_path, document.content_type)
-        chunks = chunk_text(text)
-        embedding_config = await embedding_repository.get()
-        client = OllamaEmbeddingClient(embedding_config)
+            text = extract_text(document.source_path, document.content_type)
+            chunks = chunk_text(text)
+            embedding_config = await embedding_repository.get()
+            client = OllamaEmbeddingClient(embedding_config)
 
-        indexed_chunks: list[tuple[str, list[float], dict]] = []
-        for index, chunk in enumerate(chunks):
-            embedding = await client.embed(chunk)
-            indexed_chunks.append(
-                (
-                    chunk,
-                    embedding,
-                    {
-                        "filename": document.filename,
-                        "content_type": document.content_type,
-                        "chunk_index": index,
-                    },
+            indexed_chunks: list[tuple[str, list[float], dict]] = []
+            for index, chunk in enumerate(chunks):
+                embedding = await client.embed(chunk)
+                indexed_chunks.append(
+                    (
+                        chunk,
+                        embedding,
+                        {
+                            "filename": document.filename,
+                            "content_type": document.content_type,
+                            "chunk_index": index,
+                        },
+                    )
                 )
-            )
 
-        await knowledge_repository.replace_chunks(
-            document_id=document.document_id,
-            agent_name=AgentName(document.agent_name),
-            chunks=indexed_chunks,
-            status=KnowledgeDocumentStatus.INDEXED,
-        )
+            await knowledge_repository.replace_chunks(
+                document_id=document.document_id,
+                agent_name=AgentName(document.agent_name),
+                chunks=indexed_chunks,
+                status=KnowledgeDocumentStatus.INDEXED,
+            )
+        except Exception:
+            await knowledge_repository.mark_document_status(document_id, KnowledgeDocumentStatus.FAILED)
+            raise

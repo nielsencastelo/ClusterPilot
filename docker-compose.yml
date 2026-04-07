@@ -1,4 +1,12 @@
 services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: clusterpilot-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+
   postgres:
     image: postgres:16-alpine
     container_name: clusterpilot-postgres
@@ -29,8 +37,11 @@ services:
       CLUSTERPILOT_DATABASE_URL: postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot
       CLUSTERPILOT_CELERY_BROKER_URL: redis://redis:6379/0
       CLUSTERPILOT_CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CLUSTERPILOT_KNOWLEDGE_STORAGE_PATH: /data/knowledge
     ports:
       - "8000:8000"
+    volumes:
+      - knowledge_data:/data/knowledge
 
   celery-worker:
     build:
@@ -44,7 +55,10 @@ services:
       CLUSTERPILOT_DATABASE_URL: postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot
       CLUSTERPILOT_CELERY_BROKER_URL: redis://redis:6379/0
       CLUSTERPILOT_CELERY_RESULT_BACKEND: redis://redis:6379/1
+      CLUSTERPILOT_KNOWLEDGE_STORAGE_PATH: /data/knowledge
     command: ["celery", "-A", "app.worker.celery_app.celery_app", "worker", "--loglevel=info"]
+    volumes:
+      - knowledge_data:/data/knowledge
 
   worker-agent:
     build:
@@ -74,3 +88,5 @@ services:
 
 volumes:
   postgres_data:
+  knowledge_data:
+  ollama_data:

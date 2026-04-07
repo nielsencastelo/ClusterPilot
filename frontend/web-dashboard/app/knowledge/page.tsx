@@ -1,21 +1,24 @@
 import { EmbeddingConfigManager } from "@/components/embedding-config-manager";
-import { ModelCatalogManager } from "@/components/model-catalog-manager";
-import { fetchEmbeddingConfig, fetchModelCatalog } from "@/lib/api";
+import { KnowledgeManager } from "@/components/knowledge-manager";
+import { fetchEmbeddingConfig, fetchKnowledgeDocuments } from "@/lib/api";
 
-export default async function ModelsPage() {
-  const [catalog, embeddingConfig] = await Promise.all([fetchModelCatalog(), fetchEmbeddingConfig()]);
+export default async function KnowledgePage() {
+  const [embeddingConfig, documents] = await Promise.all([
+    fetchEmbeddingConfig(),
+    fetchKnowledgeDocuments("planner"),
+  ]);
 
   return (
     <main style={{ maxWidth: 1180, margin: "0 auto", display: "grid", gap: 24 }}>
       <section style={heroStyle}>
-        <div style={eyebrowStyle}>Model Catalog</div>
-        <h1 style={{ margin: 0, fontSize: 46 }}>Manage the models available to ClusterPilot.</h1>
+        <div style={eyebrowStyle}>Knowledge</div>
+        <h1 style={{ margin: 0, fontSize: 46 }}>Create a dedicated knowledge base for each agent.</h1>
         <p style={heroTextStyle}>
-          Register local or cloud models, classify their status, decide which agents they are recommended for and store the embedding generator used by the knowledge layer.
+          Upload PDF, TXT and JSON documents, generate embeddings with Ollama and retrieve context per agent.
         </p>
       </section>
       <EmbeddingConfigManager initialConfig={embeddingConfig} />
-      <ModelCatalogManager initialItems={catalog.items} />
+      <KnowledgeManager initialAgent="planner" initialDocuments={documents.items} />
     </main>
   );
 }

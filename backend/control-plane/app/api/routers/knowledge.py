@@ -22,8 +22,8 @@ async def list_documents(agent_name: AgentName, service: KnowledgeServiceDep) ->
 @router.post("/documents/{agent_name}", response_model=KnowledgeDocumentRecord)
 async def upload_document(
     agent_name: AgentName,
-    file: UploadFile = File(...),
     service: KnowledgeServiceDep,
+    file: UploadFile = File(...),
 ) -> KnowledgeDocumentRecord:
     return await service.save_document(agent_name, file)
 

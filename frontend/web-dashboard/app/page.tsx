@@ -242,6 +242,7 @@ export default async function HomePage() {
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginTop: 20 }}>
             <a href="/models" style={heroLinkStyle}>Manage Models</a>
             <a href="/agents" style={heroLinkStyle}>Configure Agents</a>
+            <a href="/knowledge" style={heroLinkStyle}>Agent Knowledge</a>
           </div>
         </div>
       </section>
