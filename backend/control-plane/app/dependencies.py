@@ -4,10 +4,13 @@ from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .application.services.job_service import JobService
+from .application.services.knowledge_service import KnowledgeService
 from .application.services.model_service import ModelService
 from .application.services.node_service import NodeService
 from .infrastructure.database.session import get_db_session
 from .infrastructure.repositories.sqlalchemy import (
+    SqlAlchemyEmbeddingConfigRepository,
+    SqlAlchemyKnowledgeRepository,
     SqlAlchemyAgentConfigRepository,
     SqlAlchemyJobRepository,
     SqlAlchemyModelCatalogRepository,
@@ -29,6 +32,14 @@ def get_model_service(session: DbSessionDep) -> ModelService:
     return ModelService(SqlAlchemyModelCatalogRepository(session), SqlAlchemyAgentConfigRepository(session))
 
 
+def get_knowledge_service(session: DbSessionDep) -> KnowledgeService:
+    return KnowledgeService(
+        SqlAlchemyKnowledgeRepository(session),
+        SqlAlchemyEmbeddingConfigRepository(session),
+    )
+
+
 NodeServiceDep = Annotated[NodeService, Depends(get_node_service)]
 JobServiceDep = Annotated[JobService, Depends(get_job_service)]
 ModelServiceDep = Annotated[ModelService, Depends(get_model_service)]
+KnowledgeServiceDep = Annotated[KnowledgeService, Depends(get_knowledge_service)]

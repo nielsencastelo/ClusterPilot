@@ -12,6 +12,7 @@ from .infrastructure.database.seed import seed_initial_data
 from .infrastructure.database.session import SessionLocal, engine
 from .api.routers.health import router as health_router
 from .api.routers.jobs import router as jobs_router
+from .api.routers.knowledge import router as knowledge_router
 from .api.routers.model_management import router as model_management_router
 from .api.routers.nodes import router as nodes_router
 
@@ -35,6 +36,7 @@ app.include_router(health_router)
 app.include_router(nodes_router)
 app.include_router(jobs_router)
 app.include_router(model_management_router)
+app.include_router(knowledge_router)
 
 
 @app.on_event("startup")
