@@ -16,17 +16,17 @@ router = APIRouter(prefix="/api/v1", tags=["model-management"])
 
 @router.get("/models/catalog", response_model=ModelCatalogResponse)
 async def list_models(service: ModelServiceDep) -> ModelCatalogResponse:
-    return service.list_models()
+    return await service.list_models()
 
 
 @router.post("/models/catalog", response_model=ModelCatalogItem, status_code=status.HTTP_201_CREATED)
 async def upsert_model(payload: ModelCatalogUpsert, service: ModelServiceDep) -> ModelCatalogItem:
-    return service.upsert_model(payload)
+    return await service.upsert_model(payload)
 
 
 @router.get("/agents/config", response_model=AgentConfigListResponse)
 async def list_agent_configs(service: ModelServiceDep) -> AgentConfigListResponse:
-    return service.list_agent_configs()
+    return await service.list_agent_configs()
 
 
 @router.put("/agents/config/{agent_name}", response_model=AgentModelConfig)
@@ -35,4 +35,4 @@ async def upsert_agent_config(
 ) -> AgentModelConfig:
     if payload.agent_name != agent_name:
         payload = payload.model_copy(update={"agent_name": agent_name})
-    return service.upsert_agent_config(payload)
+    return await service.upsert_agent_config(payload)

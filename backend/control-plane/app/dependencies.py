@@ -1,33 +1,32 @@
 from typing import Annotated
 
 from fastapi import Depends
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .application.services.job_service import JobService
 from .application.services.model_service import ModelService
 from .application.services.node_service import NodeService
-from .infrastructure.repositories.memory import (
-    InMemoryAgentConfigRepository,
-    InMemoryJobRepository,
-    InMemoryModelCatalogRepository,
-    InMemoryNodeRepository,
+from .infrastructure.database.session import get_db_session
+from .infrastructure.repositories.sqlalchemy import (
+    SqlAlchemyAgentConfigRepository,
+    SqlAlchemyJobRepository,
+    SqlAlchemyModelCatalogRepository,
+    SqlAlchemyNodeRepository,
 )
 
-node_repository = InMemoryNodeRepository()
-job_repository = InMemoryJobRepository()
-model_repository = InMemoryModelCatalogRepository()
-agent_config_repository = InMemoryAgentConfigRepository()
+DbSessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 
 
-def get_node_service() -> NodeService:
-    return NodeService(node_repository)
+def get_node_service(session: DbSessionDep) -> NodeService:
+    return NodeService(SqlAlchemyNodeRepository(session))
 
 
-def get_job_service() -> JobService:
-    return JobService(job_repository)
+def get_job_service(session: DbSessionDep) -> JobService:
+    return JobService(SqlAlchemyJobRepository(session))
 
 
-def get_model_service() -> ModelService:
-    return ModelService(model_repository, agent_config_repository)
+def get_model_service(session: DbSessionDep) -> ModelService:
+    return ModelService(SqlAlchemyModelCatalogRepository(session), SqlAlchemyAgentConfigRepository(session))
 
 
 NodeServiceDep = Annotated[NodeService, Depends(get_node_service)]

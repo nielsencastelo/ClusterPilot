@@ -1,11 +1,50 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: clusterpilot-postgres
+    environment:
+      POSTGRES_DB: clusterpilot
+      POSTGRES_USER: clusterpilot
+      POSTGRES_PASSWORD: clusterpilot
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    container_name: clusterpilot-redis
+    ports:
+      - "6379:6379"
+
   control-plane:
     build:
       context: .
       dockerfile: backend/control-plane/Dockerfile
     container_name: clusterpilot-control-plane
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      CLUSTERPILOT_DATABASE_URL: postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot
+      CLUSTERPILOT_CELERY_BROKER_URL: redis://redis:6379/0
+      CLUSTERPILOT_CELERY_RESULT_BACKEND: redis://redis:6379/1
     ports:
       - "8000:8000"
+
+  celery-worker:
+    build:
+      context: .
+      dockerfile: backend/control-plane/Dockerfile
+    container_name: clusterpilot-celery-worker
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      CLUSTERPILOT_DATABASE_URL: postgresql+asyncpg://clusterpilot:clusterpilot@postgres:5432/clusterpilot
+      CLUSTERPILOT_CELERY_BROKER_URL: redis://redis:6379/0
+      CLUSTERPILOT_CELERY_RESULT_BACKEND: redis://redis:6379/1
+    command: ["celery", "-A", "app.worker.celery_app.celery_app", "worker", "--loglevel=info"]
 
   worker-agent:
     build:
@@ -32,3 +71,6 @@ services:
       NEXT_PUBLIC_CLUSTERPILOT_API_BASE_URL: http://localhost:8000
     ports:
       - "3000:3000"
+
+volumes:
+  postgres_data:

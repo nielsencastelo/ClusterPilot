@@ -5,7 +5,7 @@ WORKDIR /app
 COPY backend/control-plane /app/backend/control-plane
 COPY backend/core /app/backend/core
 
-RUN pip install --no-cache-dir fastapi uvicorn pydantic
+RUN pip install --no-cache-dir fastapi uvicorn pydantic sqlalchemy asyncpg "celery[redis]" redis
 
 ENV PYTHONPATH=/app/backend/core:/app/backend/control-plane
 
