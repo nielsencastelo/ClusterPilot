@@ -42,6 +42,7 @@ from ..database.models import (
     KnowledgeDocumentOrm,
     ModelCatalogOrm,
     NodeOrm,
+    ProviderIntegrationOrm,
 )
 
 
@@ -398,6 +399,7 @@ class SqlAlchemyKnowledgeRepository:
         await self.session.commit()
 
     async def search(
+
         self,
         payload: KnowledgeSearchRequest,
         embedding_config: EmbeddingRuntimeConfig,
@@ -426,3 +428,68 @@ class SqlAlchemyKnowledgeRepository:
             )
         ranked.sort(key=lambda item: item.score, reverse=True)
         return ranked[: payload.top_k]
+
+
+def _to_provider_integration(item: ProviderIntegrationOrm) -> ProviderIntegrationRecord:
+    return ProviderIntegrationRecord(
+        provider_id=item.provider_id,
+        display_name=item.display_name,
+        api_key_set=bool(item.api_key),
+        base_url=item.base_url,
+        enabled=item.enabled,
+        status=ProviderIntegrationStatus(item.status),
+        error_message=item.error_message,
+    )
+
+
+class SqlAlchemyProviderIntegrationRepository:
+    def __init__(self, session: AsyncSession) -> None:
+        self.session = session
+
+    async def list(self) -> list[ProviderIntegrationRecord]:
+        result = await self.session.execute(
+            select(ProviderIntegrationOrm).order_by(ProviderIntegrationOrm.provider_id.asc())
+        )
+        return [_to_provider_integration(item) for item in result.scalars().all()]
+
+    async def get_orm(self, provider_id: str) -> ProviderIntegrationOrm | None:
+        return await self.session.get(ProviderIntegrationOrm, provider_id)
+
+    async def get(self, provider_id: str) -> ProviderIntegrationRecord | None:
+        item = await self.session.get(ProviderIntegrationOrm, provider_id)
+        return _to_provider_integration(item) if item is not None else None
+
+    async def upsert(self, provider_id: str, payload: ProviderIntegrationUpsert) -> ProviderIntegrationRecord:
+        item = await self.session.get(ProviderIntegrationOrm, provider_id)
+        if item is None:
+            item = ProviderIntegrationOrm(
+                provider_id=provider_id,
+                status=ProviderIntegrationStatus.UNCHECKED.value,
+            )
+            self.session.add(item)
+        item.display_name = payload.display_name
+        if payload.api_key is not None:
+            item.api_key = payload.api_key if payload.api_key != "" else None
+        if payload.base_url is not None:
+            item.base_url = payload.base_url
+        item.enabled = payload.enabled
+        item.updated_at = datetime.now(timezone.utc)
+        await self.session.commit()
+        await self.session.refresh(item)
+        return _to_provider_integration(item)
+
+    async def update_status(
+        self,
+        provider_id: str,
+        status: ProviderIntegrationStatus,
+        error_message: str | None = None,
+    ) -> ProviderIntegrationRecord | None:
+        item = await self.session.get(ProviderIntegrationOrm, provider_id)
+        if item is None:
+            return None
+        item.status = status.value
+        item.error_message = error_message
+        item.updated_at = datetime.now(timezone.utc)
+        await self.session.commit()
+        await self.session.refresh(item)
+        return _to_provider_integration(item)

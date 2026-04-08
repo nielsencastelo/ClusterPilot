@@ -16,6 +16,25 @@ const agentAccents: Record<string, string> = {
   policy: "#06b6d4",
 };
 
+const providerLabels: Record<string, string> = {
+  ollama: "Ollama (Local)",
+  anthropic: "Anthropic",
+  openai: "OpenAI",
+  gemini: "Google Gemini",
+  groq: "Groq",
+};
+
+/** Group available models by provider for <optgroup> rendering */
+function groupByProvider(models: ModelCatalogItem[]): Map<string, ModelCatalogItem[]> {
+  const map = new Map<string, ModelCatalogItem[]>();
+  for (const m of models) {
+    const group = map.get(m.provider) ?? [];
+    group.push(m);
+    map.set(m.provider, group);
+  }
+  return map;
+}
+
 export function AgentConfigManager({
   initialConfigs,
   modelCatalog,
@@ -26,21 +45,44 @@ export function AgentConfigManager({
   const [configs, setConfigs] = useState(initialConfigs);
   const [isPending, startTransition] = useTransition();
 
+  // Only offer models that are marked available in the catalog
+  const availableModels = useMemo(
+    () => modelCatalog.filter((m) => m.available),
+    [modelCatalog],
+  );
+
   const catalogMap = useMemo(() => {
     const map = new Map<string, ModelCatalogItem[]>();
     configs.forEach((config) => {
-      const filtered = modelCatalog.filter(
-        (item) => item.recommended_for.includes(config.agent_name) || item.available,
+      // Prefer models recommended for this agent; fall back to all available
+      const recommended = availableModels.filter((m) =>
+        m.recommended_for.includes(config.agent_name),
       );
-      map.set(config.agent_name, filtered);
+      map.set(config.agent_name, recommended.length > 0 ? recommended : availableModels);
     });
     return map;
-  }, [configs, modelCatalog]);
+  }, [configs, availableModels]);
+
+  const hasNoModels = availableModels.length === 0;
 
   return (
     <div style={{ display: "grid", gap: 16 }}>
+      {hasNoModels && (
+        <div style={{
+          padding: "16px 20px", borderRadius: 14,
+          background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.2)",
+          fontSize: 13, color: "var(--warn)", lineHeight: 1.6,
+        }}>
+          <strong>No models available.</strong> Go to{" "}
+          <a href="/models" style={{ color: "var(--warn)", textDecoration: "underline" }}>
+            Model Integrations
+          </a>{" "}
+          and connect at least one provider, then test the connection to sync models to the catalog.
+        </div>
+      )}
       {configs.map((config) => {
-        const availableModels = catalogMap.get(config.agent_name) ?? [];
+        const agentModels = catalogMap.get(config.agent_name) ?? [];
+        const grouped = groupByProvider(agentModels);
         const accent = agentAccents[config.agent_name] ?? "var(--accent)";
 
         return (
@@ -103,41 +145,56 @@ export function AgentConfigManager({
             </div>
 
             <div style={gridStyle}>
-              <select
-                className="input-dark"
-                value={`${config.provider}::${config.model}`}
-                onChange={(event) => {
-                  const [provider, model] = event.target.value.split("::");
-                  setConfigs((current) =>
-                    current.map((item) =>
-                      item.agent_name === config.agent_name ? { ...item, provider, model } : item,
-                    ),
-                  );
-                }}
-              >
-                {availableModels.map((item) => (
-                  <option key={`${item.provider}-${item.model}`} value={`${item.provider}::${item.model}`}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-              <input
-                className="input-dark"
-                type="number"
-                min={0}
-                max={2}
-                step={0.1}
-                value={config.temperature}
-                onChange={(event) =>
-                  setConfigs((current) =>
-                    current.map((item) =>
-                      item.agent_name === config.agent_name
-                        ? { ...item, temperature: Number(event.target.value) }
-                        : item,
-                    ),
-                  )
-                }
-              />
+              <div>
+                <label style={fieldLabelStyle}>Model</label>
+                <select
+                  className="input-dark"
+                  value={`${config.provider}::${config.model}`}
+                  disabled={agentModels.length === 0}
+                  onChange={(event) => {
+                    const [provider, model] = event.target.value.split("::");
+                    setConfigs((current) =>
+                      current.map((item) =>
+                        item.agent_name === config.agent_name ? { ...item, provider, model } : item,
+                      ),
+                    );
+                  }}
+                >
+                  {agentModels.length === 0 ? (
+                    <option value="">— No models available —</option>
+                  ) : (
+                    Array.from(grouped.entries()).map(([provider, models]) => (
+                      <optgroup key={provider} label={providerLabels[provider] ?? provider}>
+                        {models.map((m) => (
+                          <option key={`${m.provider}-${m.model}`} value={`${m.provider}::${m.model}`}>
+                            {m.label}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))
+                  )}
+                </select>
+              </div>
+              <div>
+                <label style={fieldLabelStyle}>Temperature</label>
+                <input
+                  className="input-dark"
+                  type="number"
+                  min={0}
+                  max={2}
+                  step={0.1}
+                  value={config.temperature}
+                  onChange={(event) =>
+                    setConfigs((current) =>
+                      current.map((item) =>
+                        item.agent_name === config.agent_name
+                          ? { ...item, temperature: Number(event.target.value) }
+                          : item,
+                      ),
+                    )
+                  }
+                />
+              </div>
             </div>
 
             <textarea
@@ -198,3 +255,12 @@ const headingStyle = { margin: 0, fontSize: 22, fontWeight: 700, textTransform: 
 const subtleStyle = { color: "var(--muted)", margin: "3px 0 0", fontSize: 13 };
 const gridStyle = { display: "grid", gap: 12, gridTemplateColumns: "2fr 1fr", margin: "16px 0 12px" };
 const textareaExtra = { resize: "vertical" as const, marginTop: 0, minHeight: 80 };
+const fieldLabelStyle = {
+  display: "block",
+  fontSize: 11,
+  fontWeight: 600,
+  textTransform: "uppercase" as const,
+  letterSpacing: "0.1em",
+  color: "var(--muted)",
+  marginBottom: 6,
+};

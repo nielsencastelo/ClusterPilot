@@ -2,13 +2,19 @@ import type { CSSProperties } from "react";
 
 import { EmbeddingConfigManager } from "@/components/embedding-config-manager";
 import { ModelCatalogManager } from "@/components/model-catalog-manager";
-import { fetchEmbeddingConfig, fetchModelCatalog } from "@/lib/api";
+import { ProviderIntegrationManager } from "@/components/provider-integration-manager";
+import { fetchEmbeddingConfig, fetchModelCatalog, fetchProviderIntegrations } from "@/lib/api";
 
 export default async function ModelsPage() {
-  const [catalog, embeddingConfig] = await Promise.all([fetchModelCatalog(), fetchEmbeddingConfig()]);
+  const [catalog, embeddingConfig, integrations] = await Promise.all([
+    fetchModelCatalog(),
+    fetchEmbeddingConfig(),
+    fetchProviderIntegrations(),
+  ]);
 
   return (
-    <main style={{ maxWidth: 1180, margin: "0 auto", display: "grid", gap: 24 }}>
+    <main style={{ maxWidth: 1180, margin: "0 auto", display: "grid", gap: 32 }}>
+      {/* Hero */}
       <section className="grid-bg fade-up" style={heroStyle}>
         <div style={{
           position: "absolute", top: -50, right: 80,
@@ -16,15 +22,77 @@ export default async function ModelsPage() {
           background: "radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)",
           pointerEvents: "none",
         }} />
-        <div style={eyebrowStyle}>Model Catalog</div>
-        <h1 style={heroHeadingStyle}>Manage the models available to ClusterPilot.</h1>
+        <div style={eyebrowStyle}>Model Integrations</div>
+        <h1 style={heroHeadingStyle}>Connect providers. Unlock models for every agent.</h1>
         <p style={heroTextStyle}>
-          Register local or cloud models, classify their status, decide which agents they are recommended for and store the embedding generator used by the knowledge layer.
+          Configure your AI provider integrations below. Once a connection is tested successfully,
+          its models are automatically added to the catalog and become selectable in agent policies.
         </p>
       </section>
-      <EmbeddingConfigManager initialConfig={embeddingConfig} />
-      <ModelCatalogManager initialItems={catalog.items} />
+
+      {/* Provider integrations */}
+      <section style={{ display: "grid", gap: 16 }}>
+        <SectionHeader
+          title="Provider Integrations"
+          subtitle="Connect Ollama, Anthropic, OpenAI, Gemini or Groq. Test the connection to validate credentials and sync available models."
+          badge={`${integrations.items.filter(i => i.status === "ok").length} connected`}
+          badgeOk={integrations.items.some(i => i.status === "ok")}
+        />
+        <ProviderIntegrationManager initialIntegrations={integrations.items} />
+      </section>
+
+      {/* Model catalog */}
+      <section style={{ display: "grid", gap: 16 }}>
+        <SectionHeader
+          title="Model Catalog"
+          subtitle="All models available to ClusterPilot, populated automatically when a provider is connected. You can also add models manually."
+          badge={`${catalog.total} models`}
+          badgeOk={catalog.total > 0}
+        />
+        <ModelCatalogManager initialItems={catalog.items} />
+      </section>
+
+      {/* Embedding config */}
+      <section style={{ display: "grid", gap: 16 }}>
+        <SectionHeader
+          title="Embedding Runtime"
+          subtitle="Configure the embedding model used to generate vector representations for the knowledge base."
+        />
+        <EmbeddingConfigManager initialConfig={embeddingConfig} />
+      </section>
     </main>
+  );
+}
+
+function SectionHeader({
+  title,
+  subtitle,
+  badge,
+  badgeOk,
+}: {
+  title: string;
+  subtitle: string;
+  badge?: string;
+  badgeOk?: boolean;
+}) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16 }}>
+      <div>
+        <h2 style={{ margin: 0, fontSize: 20, fontWeight: 700, color: "var(--text)" }}>{title}</h2>
+        <p style={{ margin: "5px 0 0", fontSize: 13, color: "var(--muted)", lineHeight: 1.5, maxWidth: 640 }}>{subtitle}</p>
+      </div>
+      {badge && (
+        <span style={{
+          fontSize: 12, fontWeight: 600, whiteSpace: "nowrap",
+          color: badgeOk ? "var(--ok)" : "var(--muted)",
+          background: badgeOk ? "rgba(16,185,129,0.1)" : "rgba(100,116,139,0.08)",
+          border: `1px solid ${badgeOk ? "rgba(16,185,129,0.2)" : "rgba(120,160,255,0.1)"}`,
+          borderRadius: 999, padding: "4px 12px",
+        }}>
+          {badge}
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -50,11 +118,11 @@ const eyebrowStyle: CSSProperties = {
 
 const heroHeadingStyle: CSSProperties = {
   margin: 0,
-  fontSize: 42,
+  fontSize: 38,
   fontWeight: 800,
   color: "#fff",
   letterSpacing: "-0.02em",
-  lineHeight: 1.1,
+  lineHeight: 1.12,
 };
 
 const heroTextStyle: CSSProperties = {
@@ -62,4 +130,5 @@ const heroTextStyle: CSSProperties = {
   fontSize: 15,
   lineHeight: 1.65,
   color: "rgba(226,232,240,0.6)",
+  maxWidth: 680,
 };
